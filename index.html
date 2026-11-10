@@ -700,7 +700,29 @@
             </span>
 
         </a>
+<!-- SoulChill -->
 
+        <a href="soulchill.html" class="store-btn">
+
+            <img src="soulchill.jpg" alt="SoulChill">
+
+            <div class="app-info">
+
+                <span class="app-name">
+                    سول تشيل
+                </span>
+
+                <span class="app-name-en">
+                    SoulChill Crystals
+                </span>
+
+            </div>
+
+            <span class="arrow">
+                ‹
+            </span>
+
+        </a>
 
 
         <!-- Tango -->
@@ -769,7 +791,26 @@
 
 
 </div>
+<script>
+const { createClient } = supabase;
 
+const supabaseClient = createClient(
+  "https://anfpisxylmvclheoehnh.supabase.co",
+  "sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S"
+);
+
+async function checkUserLogin() {
+  const { data, error } = await supabaseClient.auth.getUser();
+
+  if (error || !data.user) {
+    alert("يجب تسجيل الدخول أولاً");
+    window.location.href = "register.html";
+    return false;
+  }
+
+  return true;
+}
+</script>
 
 </body>
 
