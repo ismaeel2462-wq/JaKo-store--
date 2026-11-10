@@ -227,20 +227,34 @@
 
 <script>
 
-    const SUPABlASE_URL =
+    // ==========================================
+    // إعداد Supabase - اتصال واحد موحد
+    // ==========================================
+
+    const SUPABASE_URL =
         "https://anfpisxylmvclheoehnh.supabase.co";
 
     const SUPABASE_KEY =
         "sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S";
 
-
     const { createClient } = supabase;
 
-const supabaseClient = createClient(
-    "https://anfpisxylmvclheoehnh.supabase.co",
-    "sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S"
-);
+    const supabaseClient = createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: window.localStorage
+            }
+        }
+    );
 
+    // ==========================================
+    // عناصر الصفحة
+    // ==========================================
 
     const loginForm =
         document.getElementById("loginForm");
@@ -260,290 +274,239 @@ const supabaseClient = createClient(
     const message =
         document.getElementById("message");
 
+    // ==========================================
+    // عرض الرسائل
+    // ==========================================
 
     function showMessage(text, type) {
 
         message.textContent = text;
 
-        message.className =
-            "message " + type;
+        message.className = "message " + type;
 
         message.style.display = "block";
     }
-
 
     // ==========================================
     // تسجيل الدخول
     // ==========================================
 
-    loginForm.addEventListener(
-        "submit",
-        async function(e) {
+    loginForm.addEventListener("submit", async function(e) {
 
-            e.preventDefault();
+        e.preventDefault();
 
-            message.style.display = "none";
+        message.style.display = "none";
 
+        const email =
+            emailInput.value.trim().toLowerCase();
 
-            const email =
-                emailInput.value.trim().toLowerCase();
+        const password =
+            passwordInput.value;
 
-            const password =
-                passwordInput.value;
+        if (!email || !password) {
 
+            showMessage(
+                "❌ أدخل البريد الإلكتروني وكلمة المرور.",
+                "error"
+            );
 
-            if (!email || !password) {
+            return;
+        }
+
+        loginBtn.disabled = true;
+        loginBtn.textContent = "جاري تسجيل الدخول...";
+
+        try {
+
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+            if (error) {
+                throw error;
+            }
+
+            if (!data.session) {
 
                 showMessage(
-                    "❌ أدخل البريد الإلكتروني وكلمة المرور.",
+                    "❌ لم يتم إنشاء جلسة تسجيل الدخول.",
                     "error"
                 );
 
                 return;
             }
 
+            // التأكد من حفظ الجلسة
 
-            loginBtn.disabled = true;
+            const { data: sessionData, error: sessionError } =
+                await supabaseClient.auth.getSession();
 
-            loginBtn.textContent =
-                "جاري تسجيل الدخول...";
+            if (sessionError || !sessionData.session) {
+                throw new Error("تعذر حفظ جلسة تسجيل الدخول.");
+            }
 
+            showMessage(
+                "✅ تم تسجيل الدخول بنجاح!",
+                "success"
+            );
 
-            try {
+            // العودة إلى الصفحة التي طلبت تسجيل الدخول
 
-                const { data, error } =
-                    await supabaseClient.auth.signInWithPassword({
+            let returnPage =
+                localStorage.getItem("returnAfterLogin");
 
-                        email: email,
+            setTimeout(function() {
 
-                        password: password
+                if (returnPage) {
 
-                    });
+                    localStorage.removeItem("returnAfterLogin");
 
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-
-                if (!data.session) {
-
-                    showMessage(
-                        "❌ لم يتم إنشاء جلسة تسجيل الدخول.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                showMessage(
-                    "✅ تم تسجيل الدخول بنجاح!",
-                    "success"
-                );
-
-
-                /*
-                    إذا كان المستخدم جاء من صفحة منتج
-                    سيتم إعادته إليها.
-                */
-
-                const returnPage =
-                    localStorage.getItem("returnAfterLogin");
-
-
-                setTimeout(function() {
-
-                    if (returnPage) {
-
-                        localStorage.removeItem(
-                            "returnAfterLogin"
-                        );
-
-                        window.location.href =
-                            returnPage;
-
+                    // منع إعادة التوجيه إلى صفحة تسجيل الدخول نفسها
+                    if (
+                        new URL(returnPage).origin === window.location.origin &&
+                        !returnPage.includes("login.html")
+                    ) {
+                        window.location.href = returnPage;
                     } else {
-
-                        window.location.href =
-                            "index.html";
-
+                        window.location.href = "index.html";
                     }
 
-                }, 800);
+                } else {
 
-
-            } catch (error) {
-
-                console.error(error);
-
-
-                let errorMessage =
-                    error.message || "";
-
-
-                if (
-                    errorMessage
-                    .toLowerCase()
-                    .includes("invalid login credentials")
-                ) {
-
-                    errorMessage =
-                        "❌ البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+                    window.location.href = "index.html";
 
                 }
 
-                else if (
-                    errorMessage
-                    .toLowerCase()
-                    .includes("email not confirmed")
-                ) {
+            }, 800);
 
-                    errorMessage =
-                        "📧 يجب تأكيد البريد الإلكتروني أولًا.\n\nافتح رسالة التأكيد التي أرسلها Supabase إلى بريدك الإلكتروني.";
+        } catch (error) {
 
-                }
+            console.error("Login error:", error);
 
-                else if (
-                    errorMessage
-                    .toLowerCase()
-                    .includes("rate limit")
-                ) {
+            let errorMessage = error.message || "";
 
-                    errorMessage =
-                        "⏳ تم تجاوز حد المحاولات مؤقتًا.\n\nانتظر قليلًا ثم حاول مرة أخرى.";
+            if (
+                errorMessage.toLowerCase().includes("invalid login credentials")
+            ) {
 
-                }
+                errorMessage =
+                    "❌ البريد الإلكتروني أو كلمة المرور غير صحيحة.";
 
-                else {
+            } else if (
+                errorMessage.toLowerCase().includes("email not confirmed")
+            ) {
 
-                    errorMessage =
-                        "❌ حدث خطأ أثناء تسجيل الدخول:\n" +
-                        errorMessage;
+                errorMessage =
+                    "📧 يجب تأكيد البريد الإلكتروني أولاً.\n\nافتح رسالة التأكيد في بريدك الإلكتروني.";
 
-                }
+            } else if (
+                errorMessage.toLowerCase().includes("rate limit")
+            ) {
 
+                errorMessage =
+                    "⏳ تم تجاوز حد المحاولات مؤقتاً. انتظر قليلاً ثم حاول.";
 
-                showMessage(
-                    errorMessage,
-                    "error"
-                );
+            } else {
+
+                errorMessage =
+                    "❌ حدث خطأ أثناء تسجيل الدخول:\n" + errorMessage;
 
             }
 
+            showMessage(errorMessage, "error");
+
+        } finally {
 
             loginBtn.disabled = false;
-
-            loginBtn.textContent =
-                "تسجيل الدخول";
+            loginBtn.textContent = "تسجيل الدخول";
 
         }
-    );
 
+    });
 
     // ==========================================
     // نسيت كلمة المرور
     // ==========================================
 
-    forgotBtn.addEventListener(
-        "click",
-        async function() {
+    forgotBtn.addEventListener("click", async function() {
 
-            const email =
-                emailInput.value.trim().toLowerCase();
+        const email =
+            emailInput.value.trim().toLowerCase();
 
+        if (!email) {
 
-            if (!email) {
+            showMessage(
+                "📧 أدخل بريدك الإلكتروني أولاً، ثم اضغط على نسيت كلمة المرور.",
+                "error"
+            );
+
+            emailInput.focus();
+
+            return;
+        }
+
+        forgotBtn.disabled = true;
+        forgotBtn.textContent = "جاري الإرسال...";
+
+        try {
+
+            const redirectUrl =
+                window.location.origin +
+                window.location.pathname.replace(
+                    "login.html",
+                    "reset-password.html"
+                );
+
+            const { error } =
+                await supabaseClient.auth.resetPasswordForEmail(
+                    email,
+                    {
+                        redirectTo: redirectUrl
+                    }
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            showMessage(
+                "📧 تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.\n\nتحقق من البريد الوارد ومجلد الرسائل غير المرغوب فيها.",
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error("Password reset error:", error);
+
+            if (
+                error.message.toLowerCase().includes("rate limit")
+            ) {
 
                 showMessage(
-                    "📧 أدخل بريدك الإلكتروني أولًا، ثم اضغط على «نسيت كلمة المرور؟».",
+                    "⏳ تم تجاوز حد إرسال البريد مؤقتاً. انتظر قليلاً.",
                     "error"
                 );
 
-                emailInput.focus();
-
-                return;
-            }
-
-
-            forgotBtn.disabled = true;
-
-            forgotBtn.textContent =
-                "جاري الإرسال...";
-
-
-            try {
-
-                const redirectUrl =
-                    window.location.origin +
-                    window.location.pathname
-                        .replace(
-                            "login.html",
-                            "reset-password.html"
-                        );
-
-
-                const { error } =
-                    await supabaseClient.auth
-                        .resetPasswordForEmail(
-                            email,
-                            {
-                                redirectTo: redirectUrl
-                            }
-                        );
-
-
-                if (error) {
-
-                    throw error;
-
-                }
-
+            } else {
 
                 showMessage(
-                    "📧 تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.\n\nتحقق من البريد الوارد ومجلد الرسائل غير المرغوب فيها.",
-                    "success"
+                    "❌ تعذر إرسال رابط إعادة تعيين كلمة المرور:\n" +
+                    error.message,
+                    "error"
                 );
-
-
-            } catch (error) {
-
-                console.error(error);
-
-
-                if (
-                    error.message
-                    .toLowerCase()
-                    .includes("rate limit")
-                ) {
-
-                    showMessage(
-                        "⏳ تم تجاوز حد إرسال البريد مؤقتًا.\n\nانتظر قليلًا قبل المحاولة مرة أخرى.",
-                        "error"
-                    );
-
-                } else {
-
-                    showMessage(
-                        "❌ تعذر إرسال رابط إعادة تعيين كلمة المرور:\n" +
-                        error.message,
-                        "error"
-                    );
-
-                }
 
             }
 
+        } finally {
 
             forgotBtn.disabled = false;
-
-            forgotBtn.textContent =
-                "نسيت كلمة المرور؟";
+            forgotBtn.textContent = "نسيت كلمة المرور؟";
 
         }
-    );
+
+    });
 
 </script>
 
