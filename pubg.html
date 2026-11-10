@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>JAKO STORE - شحن ببجي موبايل</title>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
 
     <style>
@@ -46,8 +44,7 @@
             color: #ff9800;
         }
 
-        select,
-        input {
+        select, input {
             width: 100%;
             padding: 12px;
             border-radius: 6px;
@@ -58,8 +55,7 @@
             font-size: 14px;
         }
 
-        select:focus,
-        input:focus {
+        select:focus, input:focus {
             border-color: #ff9800;
             outline: none;
         }
@@ -92,6 +88,11 @@
             background: #20bd5a;
         }
 
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -103,6 +104,7 @@
             background-color: rgba(0,0,0,0.85);
             justify-content: center;
             align-items: center;
+            overflow-y: auto;
         }
 
         .modal-content {
@@ -114,6 +116,7 @@
             text-align: center;
             border: 1px solid #ff9800;
             position: relative;
+            margin: 20px auto;
         }
 
         .close-icon {
@@ -142,20 +145,66 @@
             object-fit: contain;
         }
 
-        .btn-close {
+        .note-instructions {
+            background: #332200;
+            border: 1px solid #ff9800;
+            padding: 12px;
+            border-radius: 8px;
+            color: #ffcc80;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-top: 18px;
+        }
+
+        .note-code-box {
+            background: #151515;
+            border: 1px dashed #ff9800;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .note-code {
+            color: #4caf50;
+            font-size: 30px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            direction: ltr;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .copy-btn {
             background: #ff9800;
             color: #121212;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        .copy-btn:hover {
+            background: #ffb52e;
+        }
+
+        .btn-close {
+            background: #25d366;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
             margin-top: 15px;
             width: 100%;
+            font-size: 15px;
         }
 
         .btn-close:hover {
-            background: #ffb52e;
+            background: #20bd5a;
         }
 
         .cancel-btn {
@@ -180,7 +229,6 @@
 
 <div class="container">
 
-    <!-- زر الرجوع -->
     <div style="text-align: right; margin-bottom: 20px;">
         <a href="index.html"
            style="background: #2a2a2a;
@@ -200,10 +248,8 @@
 
     <form id="orderForm">
 
-        <!-- ID -->
         <div class="form-group">
-
-            <label>
+            <label for="playerId">
                 أدخل الـ ID الخاص بك (Player ID):
             </label>
 
@@ -215,513 +261,404 @@
                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                 required
             >
-
         </div>
 
-
-        <!-- الباقة -->
         <div class="form-group">
+            <label for="package">اختر كمية الشدات (UC):</label>
 
-            <label>
-                اختر كمية الشدات (UC):
-            </label>
+            <select id="package" required>
+                <option value="60 شدة (UC) - 1.99$">60 شدة (UC) - 1.99$</option>
+                <option value="325 شدة (UC) - 5.99$">325 شدة (UC) - 5.99$</option>
+                <option value="660 شدة (UC) - 10.99$">660 شدة (UC) - 10.99$</option>
+                <option value="1800 شدة (UC) - 26.99$">1800 شدة (UC) - 26.99$</option>
+                <option value="3850 شدة (UC) - 52.99$">3850 شدة (UC) - 52.99$</option>
+                <option value="8100 شدة (UC) - 103.99$">8100 شدة (UC) - 103.99$</option>
+                <option value="🎫 الرويال باس العادي (Elite Pass) - 6.99$">🎫 الرويال باس العادي (Elite Pass) - 6.99$</option>
+                <option value="👑 الرويال باس البلس (Elite Plus) - 15.99$">👑 الرويال باس البلس (Elite Plus) - 15.99$</option>
+            </select>
+        </div>
 
-            <select id="package">
+        <div class="form-group">
+            <label for="paymentMethod">طريقة الدفع:</label>
 
-                <option value="60 شدة (UC) - 1.99$">
-                    60 شدة (UC) - 1.99$
-                </option>
-
-                <option value="325 شدة (UC) - 5.99$">
-                    325 شدة (UC) - 5.99$
-                </option>
-
-                <option value="660 شدة (UC) - 10.99$">
-                    660 شدة (UC) - 10.99$
-                </option>
-
-                <option value="1800 شدة (UC) - 26.99$">
-                    1800 شدة (UC) - 26.99$
-                </option>
-
-                <option value="3850 شدة (UC) - 52.99$">
-                    3850 شدة (UC) - 52.99$
-                </option>
-
-                <option value="8100 شدة (UC) - 103.99$">
-                    8100 شدة (UC) - 103.99$
-                </option>
-
-                <option value="🎫 الرويال باس العادي (Elite Pass) - 6.99$">
-                    🎫 الرويال باس العادي (Elite Pass) - 6.99$
-                </option>
-
-                <option value="👑 الرويال باس البلس (Elite Plus) - 15.99$">
-                    👑 الرويال باس البلس (Elite Plus) - 15.99$
-                </option>
-
+            <select id="paymentMethod" required>
+                <option value="">-- اختر طريقة الدفع --</option>
+                <option value="شام كاش">شام كاش (Cham Cash)</option>
+                <option value="بطاقات جوجل بلاي">بطاقة جوجل بلاي (Google Play)</option>
             </select>
 
+            <div id="paymentNotice" class="notice"></div>
         </div>
 
-
-        <!-- طريقة الدفع -->
-        <div class="form-group">
-
-            <label>
-                طريقة الدفع:
-            </label>
-
-            <select
-                id="paymentMethod"
-                onchange="handlePaymentChange()">
-
-                <option value="">
-                    -- اختر طريقة الدفع --
-                </option>
-
-                <option value="شام كاش">
-                    شام كاش (Cham Cash)
-                </option>
-
-                <option value="بطاقات جوجل بلاي">
-                    بطاقة جوجل بلاي (Google Play)
-                </option>
-
-            </select>
-
-            <div
-                id="paymentNotice"
-                class="notice">
-            </div>
-
-        </div>
-
-
-        <!-- كود جوجل بلاي -->
-        <div
-            class="form-group"
-            id="googleCodeGroup"
-            style="display: none;">
-
-            <label>
-                أدخل كود بطاقة جوجل بلاي:
-            </label>
+        <div class="form-group" id="googleCodeGroup" style="display: none;">
+            <label for="googleCode">أدخل كود بطاقة جوجل بلاي:</label>
 
             <input
                 type="text"
                 id="googleCode"
-                placeholder="أدخل الـ 16 رمزاً الخاص بالبطاقة"
+                placeholder="أدخل رمز البطاقة"
             >
-
         </div>
 
-
-        <!-- إرسال الطلب -->
-        <button
-            type="button"
-            class="btn-submit"
-            onclick="redirectToWhatsApp()">
-
+        <button type="submit" class="btn-submit" id="submitBtn">
             إرسال الطلب عبر الواتساب 💬
-
         </button>
 
     </form>
-
 </div>
-
 
 <!-- نافذة شام كاش -->
 <div id="qrModal" class="modal">
 
     <div class="modal-content">
 
-        <span
-            class="close-icon"
-            onclick="closePopup()">
+        <span class="close-icon" onclick="closePopup()">&times;</span>
 
-            &times;
+        <h3>📲 تحويل عبر شام كاش</h3>
 
-        </span>
+        <p>قم بتحويل المبلغ إلى الحساب التالي:</p>
 
-
-        <h3>
-            📲 تحويل عبر شام كاش
-        </h3>
-
-
-        <p>
-            قم بتحويل المبلغ إلى الحساب التالي:
-        </p>
-
-
-        <!-- QR -->
         <div class="qrcode-box">
-
             <img
                 src="qr-code.png"
                 alt="QR Code"
                 class="qrcode-img"
                 onerror="this.style.display='none';"
             >
-
         </div>
 
-
         <p style="font-size:15px; color:#ccc;">
-
             رقم الحساب:
-
-            <strong
-                style="color:#ff9800;"
-                id="accountNum">
-
+            <strong style="color:#ff9800;" id="accountNum">
                 0976567876
-
             </strong>
-
         </p>
 
+        <!-- تعليمات رقم الملاحظة -->
+        <div class="note-instructions">
+            <strong>⚠️ مهم جداً قبل التحويل</strong>
+            <p>
+                انسخ الرقم التالي وضعه في خانة
+                <strong>الملاحظة</strong> داخل تطبيق شام كاش
+                عند إجراء التحويل.
+                هذا الرقم خاص بطلبك، ولا يمكن استخدامه مرة أخرى.
+            </p>
 
-        <p style="color:#ffb74d; font-size:13px;">
+            <div class="note-code-box">
+                <span class="note-code" id="noteCode">--------</span>
 
-            بعد إتمام التحويل اضغط على الزر أدناه
-            لإرسال تفاصيل الطلب عبر واتساب.
+                <button type="button" class="copy-btn" onclick="copyNoteCode()">
+                    <span id="copyIcon">📋</span>
+                    <span id="copyText">نسخ الرقم</span>
+                </button>
+            </div>
+        </div>
 
+        <p style="color:#ffb74d; font-size:13px; margin-top:15px;">
+            بعد إتمام التحويل ووضع الرقم في الملاحظة،
+            اضغط على الزر أدناه لإرسال تفاصيل الطلب عبر واتساب.
         </p>
 
-
-        <!-- تأكيد التحويل -->
-        <button
-            class="btn-close"
-            onclick="confirmChamCash()">
-
-            ✅ موافق، تم التحويل وإرسال الطلب
-
+        <button class="btn-close" id="confirmBtn" onclick="confirmChamCash()">
+            ✅ تم التحويل، إرسال الطلب عبر واتساب
         </button>
 
-
-        <button
-            class="cancel-btn"
-            onclick="closePopup()">
-
+        <button class="cancel-btn" onclick="closePopup()">
             إلغاء
-
         </button>
 
     </div>
-
 </div>
 
-
 <script>
-
-    // ==========================================
     // إعداد Supabase
-    // ==========================================
 
-    const SUPABASE_URL =
-        "https://hhstmixtubmsueeinmgl.supabase.co";
+    const SUPABASE_URL = "https://anfpisxylmvclheoehnh.supabase.co";
 
-
-    // ضع هنا نفس Publishable Key الموجود
-    // في login.html و register.html
-
-    const SUPABASE_KEY =
-        "sb_publishable_tX2-nOQPMGhcnHnelJLIFg_Ya7fygLt";
-
+    const SUPABASE_KEY = "sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S";
 
     const { createClient } = supabase;
 
+    const supabaseClient = createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
-    const supabaseClient =
-        createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
-
-
-    // ==========================================
     // بيانات المتجر
-    // ==========================================
 
-    const WHATSAPP_NUMBER =
-        "963982704754";
+    const WHATSAPP_NUMBER = "963982704754";
 
+    let currentNoteCode = null;
+    let isGeneratingNote = false;
 
-    const CHAM_CASH_ACCOUNT =
-        "0976567876";
-
-
-    // ==========================================
     // التحقق من تسجيل الدخول
-    // ==========================================
 
     async function checkLogin() {
+        try {
+            const { data, error } =
+                await supabaseClient.auth.getSession();
 
-        const {
-            data: { session }
-        } = await supabaseClient.auth.getSession();
+            if (error) {
+                console.error("Supabase session error:", error);
+                return null;
+            }
 
+            return data.session;
 
-        return session;
-
+        } catch (error) {
+            console.error("Login check error:", error);
+            return null;
+        }
     }
 
+    // إنشاء رقم ملاحظة جديد من Supabase
 
-    // ==========================================
+    async function generateNoteCode() {
+        const { data, error } = await supabaseClient.rpc(
+            "generate_shamcash_note"
+        );
+
+        if (error) {
+            console.error("Note generation error:", error);
+            throw error;
+        }
+
+        if (!data || !/^[0-9]{8}$/.test(String(data))) {
+            throw new Error("لم يتم استلام رقم ملاحظة صحيح.");
+        }
+
+        return String(data);
+    }
+
+    // نسخ رقم الملاحظة
+
+    async function copyNoteCode() {
+        if (!currentNoteCode) {
+            alert("لم يتم إنشاء رقم الملاحظة بعد.");
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(currentNoteCode);
+
+            document.getElementById("copyIcon").textContent = "✅";
+            document.getElementById("copyText").textContent = "تم نسخ الرقم";
+
+        } catch (error) {
+            // طريقة بديلة للنسخ إذا تعذرت Clipboard API
+
+            const tempInput = document.createElement("textarea");
+            tempInput.value = currentNoteCode;
+            tempInput.style.position = "fixed";
+            tempInput.style.opacity = "0";
+
+            document.body.appendChild(tempInput);
+            tempInput.select();
+
+            const copied = document.execCommand("copy");
+            tempInput.remove();
+
+            if (copied) {
+                document.getElementById("copyIcon").textContent = "✅";
+                document.getElementById("copyText").textContent = "تم نسخ الرقم";
+            } else {
+                alert("تعذر النسخ تلقائياً. يرجى نسخ الرقم يدوياً.");
+            }
+        }
+    }
+
     // التعامل مع طريقة الدفع
-    // ==========================================
 
     function handlePaymentChange() {
-
         const method =
             document.getElementById("paymentMethod").value;
-
 
         const notice =
             document.getElementById("paymentNotice");
 
-
         const googleGroup =
             document.getElementById("googleCodeGroup");
 
-
-        const modal =
-            document.getElementById("qrModal");
-
-
         notice.style.display = "none";
-
         googleGroup.style.display = "none";
 
-        modal.style.display = "none";
-
-
-        // شام كاش
         if (method === "شام كاش") {
-
             notice.style.display = "block";
-
-
-            notice.innerHTML =
-                "💰 تم اختيار شام كاش. يرجى إتمام التحويل من خلال النافذة.";
-
-
-            document.getElementById("accountNum").innerText =
-                CHAM_CASH_ACCOUNT;
-
-
-            modal.style.display = "flex";
-
+            notice.textContent =
+                "💰 ستظهر نافذة التحويل ورقم الملاحظة الخاص بطلبك بعد إرسال الطلب.";
         }
 
-
-        // Google Play
         else if (method === "بطاقات جوجل بلاي") {
-
-            googleGroup.style.display = "block";
-
-
             notice.style.display = "block";
-
-
-            notice.innerHTML =
+            googleGroup.style.display = "block";
+            notice.textContent =
                 "💳 يرجى كتابة كود بطاقة جوجل بلاي بالأسفل بدقة.";
-
         }
-
     }
 
+    document
+        .getElementById("paymentMethod")
+        .addEventListener("change", handlePaymentChange);
 
-    // ==========================================
     // إغلاق نافذة شام كاش
-    // ==========================================
 
     function closePopup() {
+        document.getElementById("qrModal").style.display = "none";
 
-        document.getElementById("qrModal").style.display =
-            "none";
+        // لا نحذف الرقم من قاعدة البيانات.
+        // الرقم الذي تم إنشاؤه لن يُعاد استخدامه أبداً.
+        currentNoteCode = null;
 
+        document.getElementById("noteCode").textContent = "--------";
+        document.getElementById("copyIcon").textContent = "📋";
+        document.getElementById("copyText").textContent = "نسخ الرقم";
     }
 
+    // العودة إلى تسجيل الدخول
 
-    // ==========================================
+    function goToLogin() {
+        localStorage.setItem(
+            "returnAfterLogin",
+            window.location.href
+        );
+
+        window.location.href = "login.html";
+    }
+
     // تأكيد شام كاش
-    // ==========================================
 
     async function confirmChamCash() {
-
-        // التحقق من تسجيل الدخول
-        const session =
-            await checkLogin();
-
+        const session = await checkLogin();
 
         if (!session) {
-
             closePopup();
 
+            alert("🔐 انتهت جلسة تسجيل الدخول أو لم يتم تسجيل الدخول. يرجى تسجيل الدخول مجدداً.");
 
-            alert(
-                "🔐 يجب تسجيل الدخول أولًا لإرسال الطلب."
-            );
-
-
-            // حفظ الصفحة الحالية
-            localStorage.setItem(
-                "returnAfterLogin",
-                window.location.href
-            );
-
-
-            // الذهاب لتسجيل الدخول
-            window.location.href =
-                "login.html";
-
-
+            goToLogin();
             return;
-
         }
-
 
         const method =
             document.getElementById("paymentMethod").value;
-
 
         if (method !== "شام كاش") {
-
             closePopup();
-
             return;
-
         }
 
+        if (!currentNoteCode) {
+            alert("لا يوجد رقم ملاحظة صالح لهذا الطلب.");
+            return;
+        }
 
-        closePopup();
+        document.getElementById("confirmBtn").disabled = true;
 
+        try {
+            sendWhatsAppOrder();
 
-        sendWhatsAppOrder();
-
+        } finally {
+            document.getElementById("confirmBtn").disabled = false;
+        }
     }
 
-
-    // ==========================================
-    // زر إرسال الطلب
-    // ==========================================
+    // التحقق من البيانات وإرسال الطلب
 
     async function redirectToWhatsApp() {
-
-        // التحقق من تسجيل الدخول
-        const session =
-            await checkLogin();
-
-
-        if (!session) {
-
-            alert(
-                "🔐 يجب تسجيل الدخول أولًا لإرسال الطلب."
-            );
-
-
-            // حفظ الصفحة الحالية
-            localStorage.setItem(
-                "returnAfterLogin",
-                window.location.href
-            );
-
-
-            // الذهاب إلى صفحة تسجيل الدخول
-            window.location.href =
-                "login.html";
-
-
-            return;
-
-        }
-
-
         const id =
             document.getElementById("playerId").value.trim();
-
 
         const method =
             document.getElementById("paymentMethod").value;
 
+        const googleCode =
+            document.getElementById("googleCode").value.trim();
 
-        // التحقق من البيانات
-        if (!id || !method) {
-
-            alert(
-                "الرجاء إدخال الـ ID واختيار طريقة الدفع!"
-            );
-
-
+        if (!id || !/^[0-9]+$/.test(id)) {
+            alert("الرجاء إدخال Player ID صحيح يتكون من أرقام فقط.");
             return;
-
         }
 
+        if (!method) {
+            alert("الرجاء اختيار طريقة الدفع.");
+            return;
+        }
 
-        // شام كاش
+        if (
+            method === "بطاقات جوجل بلاي" &&
+            !googleCode
+        ) {
+            alert("الرجاء إدخال كود بطاقة جوجل بلاي.");
+            return;
+        }
+
+        const session = await checkLogin();
+
+        if (!session) {
+            alert("🔐 يجب تسجيل الدخول أولاً لإرسال الطلب.");
+            goToLogin();
+            return;
+        }
+
         if (method === "شام كاش") {
+            if (isGeneratingNote) return;
 
-            document.getElementById("qrModal").style.display =
-                "flex";
+            isGeneratingNote = true;
 
+            const submitBtn =
+                document.getElementById("submitBtn");
 
-            return;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "جارٍ إنشاء رقم الملاحظة...";
 
-        }
+            try {
+                // إنشاء رقم جديد وحفظه في قاعدة البيانات
 
+                currentNoteCode = await generateNoteCode();
 
-        // Google Play
-        if (method === "بطاقات جوجل بلاي") {
+                document.getElementById("noteCode").textContent =
+                    currentNoteCode;
 
-            const gCode =
-                document.getElementById("googleCode").value.trim();
+                document.getElementById("copyIcon").textContent = "📋";
+                document.getElementById("copyText").textContent = "نسخ الرقم";
 
+                document.getElementById("qrModal").style.display = "flex";
 
-            if (!gCode) {
+            } catch (error) {
+                console.error(error);
 
                 alert(
-                    "الرجاء إدخال كود بطاقة جوجل بلاي!"
+                    "تعذر إنشاء رقم الملاحظة. تأكد من إعداد قاعدة البيانات وتسجيل الدخول، ثم حاول مرة أخرى."
                 );
 
-
-                return;
-
+            } finally {
+                isGeneratingNote = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = "إرسال الطلب عبر الواتساب 💬";
             }
 
+            return;
         }
 
-
-        // إرسال الطلب
-        sendWhatsAppOrder();
-
+        if (method === "بطاقات جوجل بلاي") {
+            sendWhatsAppOrder();
+        }
     }
 
-
-    // ==========================================
-    // إنشاء رسالة واتساب
-    // ==========================================
+    // إرسال الطلب عبر واتساب
 
     function sendWhatsAppOrder() {
-
         const id =
             document.getElementById("playerId").value.trim();
-
 
         const pkg =
             document.getElementById("package").value;
 
-
         const method =
             document.getElementById("paymentMethod").value;
 
-
-        const gCode =
+        const googleCode =
             document.getElementById("googleCode").value.trim();
-
 
         let message =
 `🎮 طلب شحن ببجي موبايل جديد
@@ -734,52 +671,57 @@ ${pkg}
 💳 طريقة الدفع:
 ${method}`;
 
-
-        // إضافة كود Google Play
-        if (method === "بطاقات جوجل بلاي") {
+        if (method === "شام كاش") {
+            if (!currentNoteCode) {
+                alert("رقم الملاحظة غير موجود. يرجى إعادة المحاولة.");
+                return;
+            }
 
             message +=
-`\n\n🔑 كود بطاقة جوجل بلاي:
-${gCode}`;
+`
 
+📝 رقم ملاحظة شام كاش:
+${currentNoteCode}
+
+يرجى مطابقة رقم الملاحظة مع التحويل قبل تأكيد الشحن.`;
         }
 
+        if (method === "بطاقات جوجل بلاي") {
+            message +=
+`
 
-        // إنشاء رابط واتساب
+🔑 كود بطاقة جوجل بلاي:
+${googleCode}`;
+        }
+
         const whatsappURL =
             "https://wa.me/" +
             WHATSAPP_NUMBER +
             "?text=" +
             encodeURIComponent(message);
 
-
-        // فتح واتساب
-        window.open(
-            whatsappURL,
-            "_blank"
-        );
-
+        window.location.href = whatsappURL;
     }
 
+    // ربط النموذج
 
-    // ==========================================
+    document
+        .getElementById("orderForm")
+        .addEventListener("submit", function(event) {
+            event.preventDefault();
+            redirectToWhatsApp();
+        });
+
     // إغلاق النافذة عند الضغط خارجها
-    // ==========================================
 
-    window.onclick = function(event) {
-
+    window.addEventListener("click", function(event) {
         const modal =
             document.getElementById("qrModal");
 
-
         if (event.target === modal) {
-
             closePopup();
-
         }
-
-    };
-
+    });
 </script>
 
 </body>
