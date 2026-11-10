@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAKO STORE - شحن SoulChill</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.8);
+        }
+
+        h1 {
+            color: #ff9800;
+            font-size: 24px;
+            margin-bottom: 25px;
+        }
+
+        .top-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .top-buttons a {
+            background: #2a2a2a;
+            color: #ff9800;
+            border: 1px solid #ff9800;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #ff9800;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #2a2a2a;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        select:focus, input:focus {
+            border-color: #ff9800;
+            outline: none;
+        }
+
+        .price-box {
+            background: #252525;
+            border: 1px solid #ff9800;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .price-box .crystal-count {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .price-box .total-price {
+            color: #4caf50;
+            font-size: 27px;
+            font-weight: bold;
+            direction: ltr;
+        }
+
+        .price-note {
+            color: #aaa;
+            font-size: 11px;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .notice {
+            background: #332200;
+            border: 1px solid #ff9800;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+            color: #ffb74d;
+        }
+
+        .btn-submit {
+            background: #25d366;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            background: #20bd5a;
+        }
+
+        .btn-submit:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,.85);
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: #2a2a2a;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid #ff9800;
+            position: relative;
+            margin: 20px auto;
+        }
+
+        .close-icon {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            color: #aaa;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .qrcode-box {
+            width: 220px;
+            height: 220px;
+            margin: 15px auto;
+            border: 2px dashed #ff9800;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qrcode-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .note-instructions {
+            background: #332200;
+            border: 1px solid #ff9800;
+            padding: 12px;
+            border-radius: 8px;
+            color: #ffcc80;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-top: 18px;
+        }
+
+        .note-code-box {
+            background: #151515;
+            border: 1px dashed #ff9800;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .note-code {
+            color: #4caf50;
+            font-size: 30px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            direction: ltr;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .copy-btn {
+            background: #ff9800;
+            color: #121212;
+            border: none;
+            padding: 10px 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        .btn-close {
+            background: #25d366;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        .cancel-btn {
+            background: #555;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .order-price {
+            color: #4caf50;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top-buttons">
+        <a href="index.html">⬅️ الرجوع</a>
+        <a href="login.html" onclick="saveReturnPage()">🔐 تسجيل الدخول</a>
+    </div>
+
+    <h1>💎 شحن SoulChill</h1>
+
+    <form id="orderForm">
+
+        <div class="form-group">
+            <label for="playerId">أدخل معرف حساب SoulChill:</label>
+            <input
+                type="text"
+                id="playerId"
+                placeholder="أدخل معرف الحساب (ID)"
+                required
+            >
+        </div>
+
+        <!-- إدخال عدد الكريستالات مباشرة -->
+
+        <div class="form-group">
+            <label for="crystalAmount">💎 أدخل عدد الكريستالات المطلوب:</label>
+
+            <input
+                type="number"
+                id="crystalAmount"
+                placeholder="مثلاً: 5000"
+                min="1"
+                max="1000000"
+                step="1"
+                value="2160"
+                required
+            >
+
+            <div class="price-box">
+                <div class="crystal-count">
+                    عدد الكريستالات:
+                    <strong id="displayCrystals">2160</strong>
+                </div>
+
+                <div class="total-price" id="totalPrice">
+                    $4.36
+                </div>
+
+                <div class="price-note">
+                    السعر تقديري ويُحسب تناسبياً اعتماداً على أسعار الباقات الحالية.
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="paymentMethod">طريقة الدفع:</label>
+
+            <select id="paymentMethod" required>
+                <option value="">-- اختر طريقة الدفع --</option>
+                <option value="شام كاش">شام كاش (Cham Cash)</option>
+                <option value="بطاقات جوجل بلاي">بطاقة جوجل بلاي (Google Play)</option>
+                <option value="غير ذلك">غير ذلك (طلب عبر واتساب)</option>
+            </select>
+
+            <div id="paymentNotice" class="notice"></div>
+        </div>
+
+        <div class="form-group" id="googleCodeGroup" style="display:none;">
+            <label for="googleCode">أدخل كود بطاقة جوجل بلاي:</label>
+
+            <input
+                type="text"
+                id="googleCode"
+                placeholder="أدخل رمز البطاقة"
+            >
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+            إرسال الطلب عبر الواتساب 💬
+        </button>
+
+    </form>
+</div>
+
+<!-- نافذة شام كاش -->
+
+<div id="qrModal" class="modal">
+
+    <div class="modal-content">
+
+        <span class="close-icon" onclick="closePopup()">&times;</span>
+
+        <h3>📲 تحويل عبر شام كاش</h3>
+
+        <p>قم بتحويل المبلغ إلى الحساب التالي:</p>
+
+        <div class="qrcode-box">
+            <img
+                src="qr-code.png"
+                alt="QR Code شام كاش"
+                class="qrcode-img"
+                onerror="this.style.display='none';"
+            >
+        </div>
+
+        <p style="font-size:15px;color:#ccc;">
+            رقم الحساب:
+            <strong style="color:#ff9800;" id="accountNum">
+                0976567876
+            </strong>
+        </p>
+
+        <p>
+            المبلغ المطلوب:
+            <span class="order-price" id="modalPrice">$4.36</span>
+        </p>
+
+        <div class="note-instructions">
+
+            <strong>⚠️ مهم جداً قبل التحويل</strong>
+
+            <p>
+                انسخ الرقم التالي وضعه في خانة الملاحظة
+                داخل تطبيق شام كاش عند إجراء التحويل.
+                هذا الرقم خاص بطلبك.
+            </p>
+
+            <div class="note-code-box">
+
+                <span class="note-code" id="noteCode">--------</span>
+
+                <button type="button" class="copy-btn" onclick="copyNoteCode()">
+                    <span id="copyIcon">📋</span>
+                    <span id="copyText">نسخ الرقم</span>
+                </button>
+
+            </div>
+        </div>
+
+        <p style="color:#ffb74d;font-size:13px;margin-top:15px;">
+            بعد إتمام التحويل ووضع الرقم في الملاحظة،
+            اضغط على الزر أدناه لإرسال تفاصيل الطلب عبر واتساب.
+        </p>
+
+        <button class="btn-close" id="confirmBtn" onclick="confirmChamCash()">
+            ✅ تم التحويل، إرسال الطلب عبر واتساب
+        </button>
+
+        <button class="cancel-btn" onclick="closePopup()">
+            إلغاء
+        </button>
+
+    </div>
+</div>
+
+<script>
+    // إعداد Supabase
+
+    const SUPABASE_URL =
+        "https://anfpisxylmvclheoehnh.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S";
+
+    const { createClient } = supabase;
+
+    const supabaseClient = createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+    // بيانات المتجر
+
+    const WHATSAPP_NUMBER = "963982704754";
+
+    let currentNoteCode = null;
+    let isGeneratingNote = false;
+
+    // أسعار الكريستالات الحالية
+    // يتم حساب السعر بالتناسب بين أقرب باقتين
+
+    const crystalPrices = [
+        { crystals: 2160, price: 4.36 },
+        { crystals: 4450, price: 8.97 },
+        { crystals: 13700, price: 27.59 },
+        { crystals: 23500, price: 47.32 },
+        { crystals: 48300, price: 97.25 }
+    ];
+
+    // حساب السعر تلقائياً
+
+    function calculatePrice(amount) {
+
+        if (!Number.isInteger(amount) || amount < 1 || amount > 1000000) {
+            return null;
+        }
+
+        let lower;
+        let upper;
+
+        if (amount <= crystalPrices[0].crystals) {
+            lower = crystalPrices[0];
+            upper = crystalPrices[1];
+        }
+
+        else if (amount >= crystalPrices[crystalPrices.length - 1].crystals) {
+            lower = crystalPrices[crystalPrices.length - 2];
+            upper = crystalPrices[crystalPrices.length - 1];
+        }
+
+        else {
+            for (let i = 0; i < crystalPrices.length - 1; i++) {
+
+                if (
+                    amount >= crystalPrices[i].crystals &&
+                    amount <= crystalPrices[i + 1].crystals
+                ) {
+                    lower = crystalPrices[i];
+                    upper = crystalPrices[i + 1];
+                    break;
+                }
+            }
+        }
+
+        const crystalDifference =
+            upper.crystals - lower.crystals;
+
+        const priceDifference =
+            upper.price - lower.price;
+
+        const pricePerCrystal =
+            priceDifference / crystalDifference;
+
+        const calculatedPrice =
+            lower.price +
+            (amount - lower.crystals) * pricePerCrystal;
+
+        return Math.max(0.01, Math.round(calculatedPrice * 100) / 100);
+    }
+
+    // تحديث السعر عند إدخال الكمية
+
+    function updatePrice() {
+
+        const amountInput =
+            document.getElementById("crystalAmount");
+
+        const amount =
+            Number(amountInput.value);
+
+        const price =
+            calculatePrice(amount);
+
+        const displayCrystals =
+            document.getElementById("displayCrystals");
+
+        const totalPrice =
+            document.getElementById("totalPrice");
+
+        const submitBtn =
+            document.getElementById("submitBtn");
+
+        if (price === null) {
+
+            displayCrystals.textContent = "—";
+            totalPrice.textContent = "—";
+
+            submitBtn.disabled = true;
+
+            return;
+        }
+
+        displayCrystals.textContent =
+            amount.toLocaleString("en-US");
+
+        totalPrice.textContent =
+            "$" + price.toFixed(2);
+
+        document.getElementById("modalPrice").textContent =
+            "$" + price.toFixed(2);
+
+        submitBtn.disabled = false;
+    }
+
+    document
+        .getElementById("crystalAmount")
+        .addEventListener("input", updatePrice);
+
+    // حفظ رابط الصفحة للعودة بعد تسجيل الدخول
+
+    function saveReturnPage() {
+
+        localStorage.setItem(
+            "returnAfterLogin",
+            window.location.href
+        );
+    }
+
+    // التحقق من تسجيل الدخول
+
+    async function checkLogin() {
+
+        try {
+
+            const { data, error } =
+                await supabaseClient.auth.getSession();
+
+            if (error) {
+                console.error("Supabase session error:", error);
+                return null;
+            }
+
+            return data.session;
+
+        } catch (error) {
+
+            console.error("Login check error:", error);
+            return null;
+        }
+    }
+
+    // إنشاء رقم الملاحظة
+
+    async function generateNoteCode() {
+
+        const { data, error } = await supabaseClient.rpc(
+            "generate_shamcash_note"
+        );
+
+        if (error) {
+            console.error("Note generation error:", error);
+            throw error;
+        }
+
+        if (!data || !/^[0-9]{8}$/.test(String(data))) {
+            throw new Error("لم يتم استلام رقم ملاحظة صحيح.");
+        }
+
+        return String(data);
+    }
+
+    // نسخ رقم الملاحظة
+
+    async function copyNoteCode() {
+
+        if (!currentNoteCode) {
+            alert("لم يتم إنشاء رقم الملاحظة بعد.");
+            return;
+        }
+
+        try {
+
+            await navigator.clipboard.writeText(currentNoteCode);
+
+            document.getElementById("copyIcon").textContent = "✅";
+            document.getElementById("copyText").textContent = "تم نسخ الرقم";
+
+        } catch (error) {
+
+            const tempInput = document.createElement("textarea");
+
+            tempInput.value = currentNoteCode;
+            tempInput.style.position = "fixed";
+            tempInput.style.opacity = "0";
+
+            document.body.appendChild(tempInput);
+            tempInput.select();
+
+            const copied = document.execCommand("copy");
+            tempInput.remove();
+
+            if (copied) {
+
+                document.getElementById("copyIcon").textContent = "✅";
+                document.getElementById("copyText").textContent = "تم نسخ الرقم";
+
+            } else {
+
+                alert("تعذر النسخ تلقائياً. يرجى نسخ الرقم يدوياً.");
+            }
+        }
+    }
+
+    // التعامل مع طرق الدفع
+
+    function handlePaymentChange() {
+
+        const method =
+            document.getElementById("paymentMethod").value;
+
+        const notice =
+            document.getElementById("paymentNotice");
+
+        const googleGroup =
+            document.getElementById("googleCodeGroup");
+
+        notice.style.display = "none";
+        googleGroup.style.display = "none";
+
+        document.getElementById("googleCode").required = false;
+
+        if (method === "شام كاش") {
+
+            notice.style.display = "block";
+
+            notice.textContent =
+                "💰 ستظهر نافذة التحويل وصورة QR ورقم الملاحظة الخاص بطلبك بعد الإرسال.";
+        }
+
+        else if (method === "بطاقات جوجل بلاي") {
+
+            notice.style.display = "block";
+            googleGroup.style.display = "block";
+
+            document.getElementById("googleCode").required = true;
+
+            notice.textContent =
+                "💳 يرجى إدخال كود بطاقة جوجل بلاي بدقة.";
+        }
+
+        else if (method === "غير ذلك") {
+
+            notice.style.display = "block";
+
+            notice.textContent =
+                "📱 سيتم إرسال طلبك مباشرة عبر واتساب للتواصل وتحديد طريقة الدفع.";
+        }
+    }
+
+    document
+        .getElementById("paymentMethod")
+        .addEventListener("change", handlePaymentChange);
+
+    // إغلاق نافذة شام كاش
+
+    function closePopup() {
+
+        document.getElementById("qrModal").style.display = "none";
+
+        currentNoteCode = null;
+
+        document.getElementById("noteCode").textContent = "--------";
+        document.getElementById("copyIcon").textContent = "📋";
+        document.getElementById("copyText").textContent = "نسخ الرقم";
+    }
+
+    // الانتقال إلى تسجيل الدخول
+
+    function goToLogin() {
+
+        saveReturnPage();
+        window.location.href = "login.html";
+    }
+
+    // تأكيد شام كاش
+
+    async function confirmChamCash() {
+
+        const session = await checkLogin();
+
+        if (!session) {
+
+            closePopup();
+
+            alert("🔐 يرجى تسجيل الدخول مجدداً.");
+
+            goToLogin();
+            return;
+        }
+
+        const method =
+            document.getElementById("paymentMethod").value;
+
+        if (method !== "شام كاش") {
+            closePopup();
+            return;
+        }
+
+        if (!currentNoteCode) {
+
+            alert("لا يوجد رقم ملاحظة صالح لهذا الطلب.");
+            return;
+        }
+
+        const confirmBtn =
+            document.getElementById("confirmBtn");
+
+        confirmBtn.disabled = true;
+
+        try {
+
+            sendWhatsAppOrder();
+
+        } finally {
+
+            confirmBtn.disabled = false;
+        }
+    }
+
+    // التحقق من البيانات وإرسال الطلب
+
+    async function redirectToWhatsApp() {
+
+        const id =
+            document.getElementById("playerId").value.trim();
+
+        const amount =
+            Number(document.getElementById("crystalAmount").value);
+
+        const price =
+            calculatePrice(amount);
+
+        const method =
+            document.getElementById("paymentMethod").value;
+
+        const googleCode =
+            document.getElementById("googleCode").value.trim();
+
+        if (!id) {
+            alert("الرجاء إدخال معرف حساب SoulChill.");
+            return;
+        }
+
+        if (price === null) {
+            alert("الرجاء إدخال عدد صحيح من الكريستالات بين 1 و1,000,000.");
+            return;
+        }
+
+        if (!method) {
+            alert("الرجاء اختيار طريقة الدفع.");
+            return;
+        }
+
+        if (
+            method === "بطاقات جوجل بلاي" &&
+            !googleCode
+        ) {
+            alert("الرجاء إدخال كود بطاقة جوجل بلاي.");
+            return;
+        }
+
+const session = await checkLogin();
+
+        if (!session) {
+            alert("🔐 يجب تسجيل الدخول أولاً لإرسال الطلب.");
+            goToLogin();
+            return;
+        }
+
+        // شام كاش
+
+        if (method === "شام كاش") {
+
+            if (isGeneratingNote) return;
+
+            isGeneratingNote = true;
+
+            const submitBtn =
+                document.getElementById("submitBtn");
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "جارٍ إنشاء رقم الملاحظة...";
+
+            try {
+
+                currentNoteCode = await generateNoteCode();
+
+                document.getElementById("noteCode").textContent =
+                    currentNoteCode;
+
+                document.getElementById("copyIcon").textContent = "📋";
+                document.getElementById("copyText").textContent = "نسخ الرقم";
+
+                document.getElementById("modalPrice").textContent =
+                    "$" + price.toFixed(2);
+
+                document.getElementById("qrModal").style.display = "flex";
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "تعذر إنشاء رقم الملاحظة. تأكد من إعداد قاعدة البيانات وتسجيل الدخول، ثم حاول مرة أخرى."
+                );
+
+            } finally {
+
+                isGeneratingNote = false;
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = "إرسال الطلب عبر الواتساب 💬";
+            }
+
+            return;
+        }
+
+        // Google Play أو طريقة أخرى
+
+        if (
+            method === "بطاقات جوجل بلاي" ||
+            method === "غير ذلك"
+        ) {
+            sendWhatsAppOrder();
+        }
+    }
+
+    // إرسال الطلب عبر واتساب
+
+    function sendWhatsAppOrder() {
+
+        const id =
+            document.getElementById("playerId").value.trim();
+
+        const amount =
+            Number(document.getElementById("crystalAmount").value);
+
+        const price =
+            calculatePrice(amount);
+
+        const method =
+            document.getElementById("paymentMethod").value;
+
+        const googleCode =
+            document.getElementById("googleCode").value.trim();
+
+        if (price === null) {
+            alert("عدد الكريستالات غير صحيح.");
+            return;
+        }
+
+        let message =
+`💎 طلب شحن SoulChill جديد
+
+🆔 معرف الحساب:
+${id}
+
+💎 عدد الكريستالات المطلوبة:
+${amount.toLocaleString("en-US")}
+
+💰 السعر الإجمالي:
+${price.toFixed(2)} USD
+
+💳 طريقة الدفع:
+${method}`;
+
+        if (method === "شام كاش") {
+
+            if (!currentNoteCode) {
+                alert("رقم الملاحظة غير موجود. يرجى إعادة المحاولة.");
+                return;
+            }
+
+            message +=
+`
+
+📝 رقم ملاحظة شام كاش:
+${currentNoteCode}
+
+يرجى مطابقة رقم الملاحظة مع التحويل قبل تأكيد الشحن.`;
+        }
+
+        if (method === "بطاقات جوجل بلاي") {
+
+            message +=
+`
+
+🔑 كود بطاقة جوجل بلاي:
+${googleCode}`;
+        }
+
+        if (method === "غير ذلك") {
+
+            message +=
+`
+
+📱 العميل يريد التواصل لتحديد طريقة الدفع المناسبة.
+يرجى التواصل معه لتأكيد الطلب.`;
+        }
+
+        const whatsappURL =
+            "https://wa.me/" +
+            WHATSAPP_NUMBER +
+            "?text=" +
+            encodeURIComponent(message);
+
+        window.location.href = whatsappURL;
+    }
+
+    // ربط النموذج
+
+    document
+        .getElementById("orderForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+            redirectToWhatsApp();
+        });
+
+    // إغلاق النافذة عند الضغط خارجها
+
+    window.addEventListener("click", function(event) {
+
+        const modal =
+            document.getElementById("qrModal");
+
+        if (event.target === modal) {
+            closePopup();
+        }
+    });
+
+    // حساب السعر عند فتح الصفحة
+
+    updatePrice();
+
+</script>
+
+</body>
+</html>
