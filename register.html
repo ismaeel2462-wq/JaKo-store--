@@ -379,22 +379,13 @@
 
             try {
 
-                const { data, error } =
-                    await supabaseClient.auth.signUp({
-
-                        email: email,
-
-                        password: password,
-
-                        options: {
-
-                            data: {
-                                name: name
-                            }
-
-                        }
-
-                    });
+                const { data, error } = await supabaseClient.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+        emailRedirectTo: "https://ismaeel2462-wq.github.io/JaKo-store--/login.html"
+    }
+});
 
 
                 if (error) {
