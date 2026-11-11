@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة | JAKO STORE</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 20px;
+    background: #121212;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 460px;
+    background: #1e1e1e;
+    padding: 28px;
+    border: 1px solid #333;
+    border-radius: 16px;
+    box-shadow: 0 10px 35px #0008;
+}
+
+.logo {
+    text-align: center;
+    color: #ff9800;
+    font-size: 29px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 28px;
+}
+
+.rate-card {
+    background: #292929;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.rate-card p {
+    color: #aaa;
+    margin: 0 0 12px;
+}
+
+.rate {
+    color: #ff9800;
+    font-size: 27px;
+    font-weight: bold;
+    direction: ltr;
+}
+
+.updated {
+    color: #888;
+    font-size: 12px;
+    margin-top: 12px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    background: #111;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: white;
+    font-size: 19px;
+    text-align: center;
+    direction: ltr;
+    outline: none;
+}
+
+input:focus {
+    border-color: #ff9800;
+}
+
+.preview {
+    background: #292929;
+    border-radius: 8px;
+    padding: 13px;
+    margin-top: 15px;
+    color: #ddd;
+    text-align: center;
+    line-height: 1.8;
+}
+
+.preview strong {
+    color: #ff9800;
+}
+
+button {
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 18px;
+    background: #ff9800;
+    color: #111;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: wait;
+}
+
+.logout {
+    background: #333;
+    color: white;
+    margin-top: 10px;
+}
+
+#message {
+    text-align: center;
+    margin-top: 16px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.success { color: #4caf50; }
+.error { color: #ff5252; }
+
+.note {
+    color: #888;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 20px;
+    line-height: 1.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">JAKO STORE</div>
+    <div class="subtitle">لوحة إدارة أسعار المتجر</div>
+
+    <div class="rate-card">
+        <p>سعر الصرف الحالي</p>
+        <div class="rate" id="currentRate">جارٍ التحميل...</div>
+        <div class="updated" id="updatedAt"></div>
+    </div>
+
+    <label for="exchangeRate">
+        سعر الدولار مقابل الليرة السورية
+    </label>
+
+    <input
+        type="number"
+        id="exchangeRate"
+        min="0.0001"
+        step="any"
+        placeholder="مثال: 14650"
+    >
+
+    <div class="preview" id="preview">
+        أدخل السعر لمشاهدة مثال التحويل.
+    </div>
+
+    <button id="saveBtn" onclick="saveRate()">
+        حفظ سعر الصرف
+    </button>
+
+    <div id="message"></div>
+
+    <button class="logout" onclick="logout()">
+        تسجيل الخروج
+    </button>
+
+    <div class="note">
+        يتم تطبيق السعر الجديد على الصفحات المرتبطة بنظام الأسعار المركزي.
+    </div>
+
+</div>
+
+<script>
+const client = supabase.createClient(
+    "https://anfpisxylmvclheoehnh.supabase.co",
+    "sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S"
+);
+
+let isAdmin = false;
+
+function formatNumber(value) {
+    return Number(value).toLocaleString("en-US", {
+        maximumFractionDigits: 4
+    });
+}
+
+function message(text, type = "") {
+    const element = document.getElementById("message");
+    element.textContent = text;
+    element.className = type;
+}
+
+async function initialize() {
+    const { data: sessionData, error: sessionError } =
+        await client.auth.getSession();
+
+    if (sessionError || !sessionData.session) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    const { data: admin, error: adminError } = await client
+        .from("store_admins")
+        .select("user_id")
+        .eq("user_id", sessionData.session.user.id)
+        .maybeSingle();
+
+    if (adminError || !admin) {
+        document.querySelector(".container").innerHTML = `
+            <h2 style="color:#ff5252;text-align:center">
+                غير مصرح بالدخول
+            </h2>
+            <p style="text-align:center;color:#aaa">
+                هذا الحساب لا يملك صلاحية إدارة المتجر.
+            </p>
+            <button onclick="logout()">تسجيل الخروج</button>
+        `;
+        return;
+    }
+
+    isAdmin = true;
+    await loadRate();
+}
+
+async function loadRate() {
+    const { data, error } = await client
+        .from("store_settings")
+        .select("usd_to_syp, updated_at")
+        .eq("id", 1)
+        .single();
+
+    if (error) {
+        message("تعذر تحميل السعر: " + error.message, "error");
+        document.getElementById("currentRate").textContent = "خطأ";
+        return;
+    }
+
+    if (data.usd_to_syp !== null) {
+        document.getElementById("currentRate").textContent =
+            formatNumber(data.usd_to_syp) + " ل.س";
+
+        document.getElementById("exchangeRate").value =
+            data.usd_to_syp;
+
+        updatePreview();
+    } else {
+        document.getElementById("currentRate").textContent =
+            "غير محدد";
+    }
+
+    if (data.updated_at) {
+        document.getElementById("updatedAt").textContent =
+            "آخر تحديث: " +
+            new Date(data.updated_at).toLocaleString("ar");
+    }
+}
+
+function updatePreview() {
+    const rate = Number(
+        document.getElementById("exchangeRate").value
+    );
+
+    const preview = document.getElementById("preview");
+
+    if (!Number.isFinite(rate) || rate <= 0) {
+        preview.textContent = "أدخل سعراً صحيحاً لمشاهدة التحويل.";
+        return;
+    }
+
+    const example = 9.99;
+
+    preview.innerHTML =
+        'مثال: <strong>$' + example +
+        '</strong> = <strong>' +
+        formatNumber(example * rate) +
+        ' ل.س</strong>';
+}
+
+document.getElementById("exchangeRate")
+    .addEventListener("input", updatePreview);
+
+async function saveRate() {
+    if (!isAdmin) return;
+
+    const input = document.getElementById("exchangeRate");
+    const button = document.getElementById("saveBtn");
+    const rate = Number(input.value);
+
+    if (!input.value || !Number.isFinite(rate) || rate <= 0) {
+        message("يرجى إدخال سعر صرف صحيح أكبر من صفر.", "error");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "جارٍ الحفظ...";
+    message("");
+
+    const { data, error } = await client
+        .from("store_settings")
+        .update({ usd_to_syp: rate })
+        .eq("id", 1)
+        .select("id");
+
+    button.disabled = false;
+    button.textContent = "حفظ سعر الصرف";
+
+    if (error) {
+        message("فشل الحفظ: " + error.message, "error");
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        message("لم يتم تحديث السعر. تحقق من صلاحيات المدير.", "error");
+        return;
+    }
+
+    message("تم حفظ سعر الصرف بنجاح!", "success");
+    await loadRate();
+}
+
+async function logout() {
+    await client.auth.signOut();
+    window.location.href = "login.html";
+}
+
+initialize();
+</script>
+
+</body>
+</html>
