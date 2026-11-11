@@ -1,129 +1,773 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAKO STORE - شحن فري فاير</title>
-    <style>
-        /* الستايل متطابق تماماً لتوحيد مظهر الموقع */
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; text-align: center; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; background: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.8); }
-        h1 { color: #ff9800; font-size: 24px; margin-bottom: 25px; }
-        .form-group { margin-bottom: 20px; text-align: right; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #ff9800; }
-        select, input { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; box-sizing: border-box; font-size: 14px; }
-        select:focus, input:focus { border-color: #ff9800; outline: none; }
-        .notice { background: #332200; border: 1px solid #ff9800; padding: 12px; border-radius: 6px; font-size: 13px; margin-top: 10px; display: none; color: #ffb74d; }
-        .btn-submit { background: #25d366; color: #fff; font-size: 18px; font-weight: bold; padding: 14px; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 20px; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
-        .modal-content { background-color: #2a2a2a; padding: 25px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; border: 1px solid #ff9800; position: relative; }
-        .close-icon { position: absolute; top: 10px; left: 15px; color: #aaa; font-size: 24px; cursor: pointer; }
-        .qrcode-box { width: 220px; height: 220px; margin: 15px auto; border: 2px dashed #ff9800; background: #1a1a1a; display: flex; align-items: center; justify-content: center; }
-        .qrcode-img { width: 100%; height: 100%; object-fit: contain; }
-        .btn-close { background: #ff9800; color: #121212; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 15px; width: 100%; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JAKO STORE - شحن فري فاير</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.8);
+}
+
+h1 {
+    color: #ff9800;
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #ff9800;
+}
+
+select, input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #2a2a2a;
+    color: #fff;
+    font-size: 14px;
+}
+
+select:focus, input:focus {
+    border-color: #ff9800;
+    outline: none;
+}
+
+.notice {
+    background: #332200;
+    border: 1px solid #ff9800;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-top: 10px;
+    display: none;
+    color: #ffb74d;
+    line-height: 1.8;
+}
+
+.price-box {
+    background: #292929;
+    border: 1px solid #ff9800;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.price-label {
+    color: #ccc;
+    font-size: 14px;
+}
+
+.price-value {
+    color: #25d366;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.btn-submit {
+    background: #25d366;
+    color: #fff;
+    font-size: 17px;
+    font-weight: bold;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.btn-submit:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.88);
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.modal-content {
+    background: #2a2a2a;
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    border: 1px solid #ff9800;
+    position: relative;
+}
+
+.close-icon {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    color: #aaa;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.qrcode-box {
+    width: 220px;
+    height: 220px;
+    max-width: 100%;
+    margin: 15px auto;
+    border: 2px dashed #ff9800;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qrcode-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.info-line {
+    margin: 12px 0;
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.info-line strong {
+    color: #ff9800;
+}
+
+.note-code {
+    background: #171717;
+    border: 1px dashed #ff9800;
+    border-radius: 8px;
+    padding: 12px;
+    color: #25d366;
+    font-size: 23px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    direction: ltr;
+    margin: 10px 0;
+}
+
+.btn-copy {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.btn-confirm {
+    background: #25d366;
+    color: white;
+    border: none;
+    padding: 13px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.btn-close {
+    background: #555;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <!-- زر الرجوع إلى الواجهة الرئيسية -->
-<div style="text-align: right; margin-bottom: 20px;">
-    <a href="index.html" style="background: #2a2a2a; color: #ff9800; border: 1px solid #ff9800; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; display: inline-block;">
-        ⬅️
-    </a>
-</div>
-    <h1>🔥 شحن فري فاير - Free Fire</h1>
-    
-    <form id="orderForm">
-        <div class="form-group">
-            <label>أدخل الـ ID الخاص بك (Player ID):</label>
-<input type="text" id="playerId" placeholder="أدخل الـ ID الخاص بك (أرقام فقط)" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
 
+    <div style="text-align:right;margin-bottom:20px;">
+        <a href="index.html"
+           style="background:#2a2a2a;color:#ff9800;border:1px solid #ff9800;padding:8px 16px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:bold;display:inline-block;">
+            ⬅️
+        </a>
+    </div>
+
+    <h1>🔥 شحن فري فاير - Free Fire</h1>
+
+    <form id="orderForm">
+
+        <div class="form-group">
+            <label for="playerId">أدخل الـ ID الخاص بك (Player ID):</label>
+            <input
+                type="text"
+                id="playerId"
+                placeholder="أدخل الـ ID الخاص بك"
+                inputmode="numeric"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                required
+            >
         </div>
 
         <div class="form-group">
-            <label>اختر كمية الجواهر:</label>
-            <select id="package">
-                <option value="100 جوهرة - 0.99$">100 جوهرة - 0.99$</option>
-<option value="210 جوهرة - 2.99$">210 جوهرة - 2.99$</option>
-<option value="530 جوهرة - 5.99$">530 جوهرة - 5.99$</option>
-<option value="1080 جوهرة - 10.99$">1080 جوهرة - 10.99$</option>
-<option value="2200 جوهرة - 20.99$">2200 جوهرة - 20.99$</option>
-<option value="📋 الاشتراك الأسبوعي (Weekly VIP) - 2.99$">📋 الاشتراك الأسبوعي (Weekly VIP) - 2.99$</option>
-<option value="📋 الاشتراك الشهري (Monthly VIP) - 8.99$">📋 الاشتراك الشهري (Monthly VIP) - 8.99$</option>
+            <label for="package">اختر كمية الجواهر أو الاشتراك:</label>
+
+            <select id="package" required>
+                <option value="100" data-price="99">100 جوهرة</option>
+                <option value="210" data-price="299">210 جوهرة</option>
+                <option value="530" data-price="599">530 جوهرة</option>
+                <option value="1080" data-price="1099">1080 جوهرة</option>
+                <option value="2200" data-price="2099">2200 جوهرة</option>
+                <option value="weekly" data-price="299">الاشتراك الأسبوعي (Weekly VIP)</option>
+                <option value="monthly" data-price="899">الاشتراك الشهري (Monthly VIP)</option>
             </select>
         </div>
 
+        <div class="price-box">
+            <div class="price-label">السعر المطلوب دفعه</div>
+            <div class="price-value" id="priceValue">جارٍ تحميل السعر...</div>
+        </div>
+
         <div class="form-group">
-            <label>طريقة الدفع:</label>
-            <select id="paymentMethod" onchange="handlePaymentChange()">
+            <label for="paymentMethod">طريقة الدفع:</label>
+
+            <select id="paymentMethod" required>
                 <option value="">-- اختر طريقة الدفع --</option>
                 <option value="شام كاش">شام كاش (Cham Cash)</option>
-                <option value="بطاقات جوجل بلاي">بطاقة جوجل بلاي (Google Play)</option>
+                <option value="بطاقات جوجل بلاي">بطاقات جوجل بلاي (Google Play)</option>
+                <option value="واتساب">طلب مباشر عبر واتساب</option>
             </select>
+
             <div id="paymentNotice" class="notice"></div>
         </div>
 
-        <div class="form-group" id="googleCodeGroup" style="display: none;">
-            <label>أدخل كود بطاقة جوجل بلاي:</label>
-            <input type="text" id="googleCode" placeholder="أدخل الـ 16 رمزاً الخاص بالبطاقة">
+        <div class="form-group" id="googleCodeGroup" style="display:none;">
+            <label for="googleCode">أدخل كود بطاقة جوجل بلاي:</label>
+            <input
+                type="text"
+                id="googleCode"
+                placeholder="أدخل كود البطاقة"
+                autocomplete="off"
+            >
         </div>
 
-        <button type="button" class="btn-submit" onclick="redirectToWhatsApp()">إرسال الطلب عبر الواتساب 💬</button>
+        <button type="submit" class="btn-submit" id="submitBtn" disabled>
+            إرسال الطلب 💬
+        </button>
+
     </form>
 </div>
 
+
+<!-- نافذة شام كاش -->
+
 <div id="qrModal" class="modal">
     <div class="modal-content">
+
         <span class="close-icon" onclick="closePopup()">&times;</span>
-        <h3>📲 مسح باركود شام كاش</h3>
-        <p>قم بمسح الكود أدناه لإرسال الأموال:</p>
+
+        <h3 style="color:#ff9800;">📲 الدفع عبر شام كاش</h3>
+
+        <p class="info-line">
+            امسح رمز QR أو استخدم رقم الحساب لتحويل المبلغ.
+        </p>
+
         <div class="qrcode-box">
-            <img src="qr-code.png" alt="[ضع صورتك باسم qr-code.png هنا]" class="qrcode-img" onerror="this.style.display='none';">
+            <img
+                src="qr-code.png"
+                alt="QR Code شام كاش"
+                class="qrcode-img"
+                onerror="this.style.display='none';"
+            >
         </div>
-        <p style="font-size: 15px; color: #ccc;">رقم الحساب: <strong style="color:#ff9800;" id="accountNum">09xxxxxxxx</strong></p>
-        <button class="btn-close" onclick="closePopup()">موافق، تم التحويل</button>
+
+        <p class="info-line">
+            رقم الحساب:
+            <strong id="accountNum">0976567876</strong>
+        </p>
+
+        <p class="info-line">
+            المبلغ المطلوب:
+            <strong id="modalAmount">--</strong>
+        </p>
+
+        <p class="info-line">
+            ضع رمز الملاحظة التالي في خانة الملاحظات داخل تطبيق شام كاش:
+        </p>
+
+        <div class="note-code" id="noteCode">--------</div>
+
+        <button type="button" class="btn-copy" onclick="copyNote()">
+            📋 نسخ رمز الملاحظة
+        </button>
+
+        <p style="font-size:12px;color:#ffb74d;line-height:1.7;">
+            احتفظ برمز الملاحظة كما هو، ثم أكمل التحويل.
+            سيتم تأكيد الدفع يدوياً بعد مراجعة التحويل.
+        </p>
+
+        <button type="button" class="btn-confirm" id="confirmPaymentBtn" onclick="confirmShamCash()">
+            تم التحويل، إرسال الطلب عبر واتساب
+        </button>
+
+        <button type="button" class="btn-close" onclick="closePopup()">
+            إغلاق
+        </button>
+
     </div>
 </div>
 
+
 <script>
-    const WHATSAPP_NUMBER = "9639xxxxxxxx"; 
-    const CHAM_CASH_ACCOUNT = "09xxxxxxxx"; 
+const { createClient } = supabase;
 
-    function handlePaymentChange() {
-        const method = document.getElementById("paymentMethod").value;
-        const notice = document.getElementById("paymentNotice");
-        const googleGroup = document.getElementById("googleCodeGroup");
-        const modal = document.getElementById("qrModal");
+const supabaseClient = createClient(
+    "https://anfpisxylmvclheoehnh.supabase.co",
+    "sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S"
+);
 
-        notice.style.display = "none"; googleGroup.style.display = "none"; modal.style.display = "none";
+const WHATSAPP_NUMBER = "963982704754";
+const CHAM_CASH_ACCOUNT = "0976567876";
+
+let exchangeRate = null;
+let pendingOrder = null;
+let isSubmitting = false;
+
+
+/* تحويل سعر الصرف إلى رقم صحيح بدقة */
+
+function decimalToScaled(value, decimals = 2) {
+    const str = String(value).trim();
+
+    if (!/^\d+(\.\d+)?$/.test(str)) {
+        throw new Error("سعر الصرف غير صالح");
+    }
+
+    const parts = str.split(".");
+    const whole = parts[0];
+    const fraction = (parts[1] || "").padEnd(decimals, "0").slice(0, decimals);
+
+    return BigInt(whole + fraction);
+}
+
+
+/* تنسيق الليرة السورية */
+
+function formatSYP(value) {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " ل.س";
+}
+
+
+/* حساب السعر مع التقريب للأعلى */
+
+function calculateSYP(priceCents) {
+    if (exchangeRate === null) {
+        throw new Error("سعر الصرف غير متاح");
+    }
+
+    const rateScaled = decimalToScaled(exchangeRate, 2);
+    const numerator = BigInt(priceCents) * rateScaled;
+    const denominator = 10000n;
+
+    const result = (numerator + denominator - 1n) / denominator;
+
+    return result;
+}
+
+
+/* جلب سعر الصرف من قاعدة البيانات */
+
+async function loadExchangeRate() {
+    const { data, error } = await supabaseClient
+        .from("store_settings")
+        .select("usd_to_syp")
+        .eq("id", 1)
+        .single();
+
+    if (error || !data || data.usd_to_syp === null) {
+        throw new Error("تعذر تحميل سعر الصرف من المتجر");
+    }
+
+    const rate = Number(data.usd_to_syp);
+
+    if (!Number.isFinite(rate) || rate <= 0) {
+        throw new Error("سعر الصرف المسجل غير صالح");
+    }
+
+    exchangeRate = data.usd_to_syp;
+}
+
+
+/* تحديث السعر عند تغيير الباقة */
+
+function updateDisplayedPrice() {
+    const packageSelect = document.getElementById("package");
+    const selected = packageSelect.options[packageSelect.selectedIndex];
+    const priceCents = selected.dataset.price;
+
+    const priceBox = document.getElementById("priceValue");
+
+    if (exchangeRate === null) {
+        priceBox.textContent = "السعر غير متاح";
+        return;
+    }
+
+    try {
+        const price = calculateSYP(priceCents);
+        priceBox.textContent = formatSYP(price);
+    } catch (error) {
+        priceBox.textContent = "تعذر حساب السعر";
+    }
+}
+
+
+/* التحقق من تسجيل الدخول */
+
+async function checkUserLogin() {
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    if (error || !data.user) {
+        localStorage.setItem("returnAfterLogin", window.location.href);
+
+        alert("يجب تسجيل الدخول أولاً لإتمام الطلب.");
+
+        window.location.href = "login.html";
+        return false;
+    }
+
+    return true;
+}
+
+
+/* تغيير طريقة الدفع */
+
+function handlePaymentChange() {
+    const method = document.getElementById("paymentMethod").value;
+    const notice = document.getElementById("paymentNotice");
+    const googleGroup = document.getElementById("googleCodeGroup");
+
+    notice.style.display = "none";
+    googleGroup.style.display = "none";
+
+    if (method === "شام كاش") {
+        notice.style.display = "block";
+        notice.textContent =
+            "سيظهر لك رمز ملاحظة خاص بالطلب عند الضغط على إرسال الطلب.";
+    }
+
+    else if (method === "بطاقات جوجل بلاي") {
+        googleGroup.style.display = "block";
+
+        notice.style.display = "block";
+        notice.textContent =
+            "يرجى إدخال كود البطاقة بشكل صحيح قبل إرسال الطلب.";
+    }
+
+    else if (method === "واتساب") {
+        notice.style.display = "block";
+        notice.textContent =
+            "سيتم إرسال تفاصيل طلبك مباشرة إلى واتساب.";
+    }
+}
+
+
+/* الحصول على الباقة المختارة */
+
+function getSelectedPackage() {
+    const select = document.getElementById("package");
+    const option = select.options[select.selectedIndex];
+
+    return {
+        value: option.value,
+        name: option.textContent,
+        priceCents: option.dataset.price
+    };
+}
+
+
+/* إنشاء رمز شام كاش الفريد */
+
+async function generateNoteCode() {
+    const { data, error } = await supabaseClient.rpc(
+        "generate_shamcash_note"
+    );
+
+    if (error) {
+        console.error("Note RPC error:", error);
+        throw new Error("تعذر إنشاء رمز الملاحظة. حاول مرة أخرى.");
+    }
+
+    let code = data;
+
+    if (Array.isArray(data)) {
+        code = data[0];
+    }
+
+    if (typeof code === "object" && code !== null) {
+        code =
+            code.note_code ||
+            code.code ||
+            code.generate_shamcash_note;
+    }
+
+    code = String(code || "").trim();
+
+    if (!/^\d{8}$/.test(code)) {
+        throw new Error("رمز الملاحظة المستلم غير صالح.");
+    }
+
+    return code;
+}
+
+
+/* نسخ رمز الملاحظة */
+
+async function copyNote() {
+    const code = document.getElementById("noteCode").textContent;
+
+    try {
+        await navigator.clipboard.writeText(code);
+        alert("تم نسخ رمز الملاحظة بنجاح.");
+    } catch (error) {
+        alert("تعذر النسخ تلقائياً. يرجى نسخ الرمز يدوياً.");
+    }
+}
+
+
+/* فتح وإغلاق نافذة شام كاش */
+
+function closePopup() {
+    document.getElementById("qrModal").style.display = "none";
+}
+
+
+/* تجهيز رسالة واتساب */
+
+function sendWhatsAppOrder(order) {
+    let message =
+`طلب شحن فري فاير جديد من JAKO STORE
+
+🆔 Player ID: ${order.playerId}
+📦 الباقة: ${order.packageName}
+💰 السعر: ${formatSYP(order.price)}
+💳 طريقة الدفع: ${order.paymentMethod}`;
+
+    if (order.noteCode) {
+        message += `
+
+📝 رمز ملاحظة شام كاش: ${order.noteCode}
+📱 حساب شام كاش: ${CHAM_CASH_ACCOUNT}
+
+يرجى مراجعة التحويل وتأكيد الطلب.`;
+    }
+
+    if (order.googleCode) {
+        message += `
+
+🔑 كود بطاقة جوجل بلاي: ${order.googleCode}`;
+    }
+
+    const url =
+        "https://wa.me/" +
+        WHATSAPP_NUMBER +
+        "?text=" +
+        encodeURIComponent(message);
+
+    window.location.href = url;
+}
+
+
+/* تأكيد تحويل شام كاش */
+
+function confirmShamCash() {
+    if (!pendingOrder) {
+        alert("لا يوجد طلب جاهز للإرسال.");
+        return;
+    }
+
+    const button = document.getElementById("confirmPaymentBtn");
+
+    button.disabled = true;
+    button.textContent = "جارٍ فتح واتساب...";
+
+    sendWhatsAppOrder(pendingOrder);
+}
+
+
+/* استقبال الطلب */
+
+document.getElementById("orderForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    if (isSubmitting) return;
+
+    const playerId = document.getElementById("playerId").value.trim();
+    const method = document.getElementById("paymentMethod").value;
+    const googleCode = document.getElementById("googleCode").value.trim();
+
+    if (!playerId) {
+        alert("يرجى إدخال Player ID.");
+        return;
+    }
+
+    if (!method) {
+        alert("يرجى اختيار طريقة الدفع.");
+        return;
+    }
+
+    if (method === "بطاقات جوجل بلاي" && !googleCode) {
+        alert("يرجى إدخال كود بطاقة جوجل بلاي.");
+        return;
+    }
+
+    const loggedIn = await checkUserLogin();
+
+    if (!loggedIn) return;
+
+    isSubmitting = true;
+
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "جارٍ تجهيز الطلب...";
+
+    try {
+        /* تحديث سعر الصرف قبل إنشاء الطلب */
+
+        await loadExchangeRate();
+
+        updateDisplayedPrice();
+
+        const selectedPackage = getSelectedPackage();
+        const price = calculateSYP(selectedPackage.priceCents);
+
+        pendingOrder = {
+            playerId: playerId,
+            packageName: selectedPackage.name,
+            price: price,
+            paymentMethod: method,
+            googleCode: googleCode,
+            noteCode: null
+        };
+
+        /* شام كاش */
 
         if (method === "شام كاش") {
-            notice.style.display = "block";
-            notice.innerHTML = "🎯 تم فتح نافذة باركود شام كاش، يرجى إتمام التحويل.";
-            document.getElementById("accountNum").innerText = CHAM_CASH_ACCOUNT;
-            modal.style.display = "flex"; 
-        } else if (method === "بطاقات جوجل بلاي") {
-            googleGroup.style.display = "block"; notice.style.display = "block";
-            notice.innerHTML = "💳 يرجى كتابة كود البطاقة بالأسفل بدقة.";
+            const noteCode = await generateNoteCode();
+
+            pendingOrder.noteCode = noteCode;
+
+            document.getElementById("accountNum").textContent =
+                CHAM_CASH_ACCOUNT;
+
+            document.getElementById("modalAmount").textContent =
+                formatSYP(price);
+
+            document.getElementById("noteCode").textContent =
+                noteCode;
+
+            document.getElementById("confirmPaymentBtn").disabled = false;
+
+            document.getElementById("confirmPaymentBtn").textContent =
+                "تم التحويل، إرسال الطلب عبر واتساب";
+
+            document.getElementById("qrModal").style.display = "flex";
         }
+
+        /* جوجل بلاي أو الطلب المباشر */
+
+        else {
+            sendWhatsAppOrder(pendingOrder);
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert(error.message || "حدث خطأ أثناء تجهيز الطلب.");
+    } finally {
+        isSubmitting = false;
+        submitBtn.disabled = exchangeRate === null;
+        submitBtn.textContent = "إرسال الطلب 💬";
     }
+});
 
-    function closePopup() { document.getElementById("qrModal").style.display = "none"; }
 
-    function redirectToWhatsApp() {
-        const id = document.getElementById("playerId").value;
-        const pkg = document.getElementById("package").value;
-        const method = document.getElementById("paymentMethod").value;
-        const gCode = document.getElementById("googleCode").value;
+/* تغيير الباقة */
 
-        if (!id || !method) { alert("الرجاء إدخال الـ ID واختيار طريقة الدفع!"); return; }
-        if (method === "بطاقات جوجل بلاي" && !gCode.trim()) { alert("الرجاء إدخال كود بطاقة جوجل بلاي!"); return; }
+document.getElementById("package").addEventListener("change", updateDisplayedPrice);
 
-        let text = "طلب شحن فري فاير جديد:%0A🆔 المعرّف (ID): " + id + "%0A📦 الفئة: " + pkg + "%0A💳 الدفع عن طريق: " + method;
-        if (method === "بطاقات جوجل بلاي") text += "%0A🔑 كود البطاقة: " + gCode;
-        window.open("https://wa.me" + WHATSAPP_NUMBER + "?text=" + text, '_blank');
+/* تغيير طريقة الدفع */
+
+document.getElementById("paymentMethod").addEventListener("change", handlePaymentChange);
+
+
+/* بدء تشغيل الصفحة */
+
+async function initializePage() {
+    const submitBtn = document.getElementById("submitBtn");
+
+    submitBtn.disabled = true;
+
+    try {
+        await loadExchangeRate();
+
+        updateDisplayedPrice();
+
+        submitBtn.disabled = false;
+
+    } catch (error) {
+        console.error(error);
+
+        document.getElementById("priceValue").textContent =
+            "تعذر تحميل السعر";
+
+        alert(
+            "تعذر تحميل سعر الصرف. يرجى المحاولة لاحقاً أو التواصل مع المتجر."
+        );
     }
+}
+
+initializePage();
+
 </script>
+
 </body>
 </html>
