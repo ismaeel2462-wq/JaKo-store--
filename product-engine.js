@@ -22,8 +22,7 @@
     if (!STORE || !STORE.client) {
         if (root) {
             root.innerHTML =
-                '<div class="notice error-message">تعذر الاتصال بإعدادات المتجر. تحقق من تحميل supabase-config.js.</div>';
-        }
+'<div class="notice" role="alert">تعذر الاتصال بإعدادات المتجر. تحقق من تحميل supabase-config.js ومكتبة Supabase.</div>';        }
 
         console.error("JAKO STORE: window.JAKO.client is unavailable.");
         return;
@@ -44,8 +43,18 @@
     }
 
     const client = STORE.client;
-    const WHATSAPP_NUMBER = STORE.WHATSAPP_NUMBER;
-    const SHAM_CASH_ACCOUNT = STORE.SHAM_CASH_ACCOUNT;
+
+const WHATSAPP_NUMBER =
+    STORE.WHATSAPP_NUMBER ||
+    STORE.whatsappNumber ||
+    (typeof STORE.getWhatsAppNumber === "function"
+        ? STORE.getWhatsAppNumber()
+        : "");
+
+const SHAM_CASH_ACCOUNT =
+    STORE.SHAM_CASH_ACCOUNT ||
+    STORE.shamCashAccount ||
+    "0976567876";
 
     let exchangeRate = null;
     let cocPrices = null;
@@ -1614,17 +1623,24 @@
             $("submitBtn").textContent =
                 "متابعة وإكمال الطلب";
 
-        } catch (error) {
+                } catch (error) {
             console.error(
                 "JAKO STORE settings error:",
                 error
             );
 
-            $("priceSYP").textContent =
-                "تعذر تحميل السعر";
+            // إبقاء سعر الباقة بالدولار ظاهراً.
+            refreshPrice();
 
-            $("priceUSD").textContent =
-                "تحقق من إعدادات المتجر";
+            if (
+                selectedItem &&
+                selectedItem.usd !== null &&
+                selectedItem.usd !== undefined &&
+                Number.isFinite(Number(selectedItem.usd))
+            ) {
+                $("priceSYP").textContent =
+                    "سعر الليرة غير متاح مؤقتاً";
+            }
 
             $("submitBtn").disabled = false;
             $("submitBtn").textContent =
