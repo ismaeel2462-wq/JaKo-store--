@@ -5,51 +5,67 @@
 ========================================= */
 
 (() => {
-    "use strict";
+    
+"use strict";
 
-   const STORE = window.JAKO_STORE || window.JAKO || null;
-    const PRODUCTS = window.JAKO_PRODUCTS || {};
-    const params = new URLSearchParams(window.location.search);
-    const productId =
-        document.body.dataset.product ||
-        params.get("product") ||
-        "";
+const STORE = [
+    window.JAKO,
+    window.JAKO_STORE
+].find(item => item && item.client) || {};
 
-    const product = PRODUCTS[productId];
-    const root = document.getElementById("productRoot");
-    const $ = (id) => document.getElementById(id);
+const client =
+    STORE.client ||
+    window.supabaseClient ||
+    null;
 
-    if (!STORE || !STORE.client) {
-        if (root) {
-            root.innerHTML =
-'<div class="notice" role="alert">تعذر الاتصال بإعدادات المتجر. تحقق من تحميل supabase-config.js ومكتبة Supabase.</div>';        }
+const PRODUCTS = window.JAKO_PRODUCTS || {};
 
-        console.error("JAKO STORE: window.JAKO.client is unavailable.");
-        return;
+const params = new URLSearchParams(window.location.search);
+
+const productId =
+    document.body.dataset.product ||
+    params.get("product") ||
+    "";
+
+const product = PRODUCTS[productId];
+
+const root = document.getElementById("productRoot");
+
+const $ = (id) => document.getElementById(id);
+
+if (!client) {
+    if (root) {
+        root.innerHTML =
+            '<div class="notice" role="alert">تعذر الاتصال بإعدادات المتجر. تحقق من تحميل إعدادات Supabase.</div>';
     }
 
-    if (!product || !root) {
-        if (root) {
-            root.innerHTML =
-                '<div class="notice">هذه الصفحة غير متاحة حالياً.</div>';
-        }
+    console.error(
+        "JAKO STORE: Supabase client is unavailable.",
+        window.JAKO,
+        window.JAKO_STORE
+    );
 
-        console.error(
-            "JAKO STORE: product or #productRoot was not found.",
-            productId
-        );
+    return;
+}
 
-        return;
+if (!product || !root) {
+    if (root) {
+        root.innerHTML =
+            '<div class="notice">هذه الصفحة غير متاحة حالياً.</div>';
     }
 
-    const client = STORE.client;
+    console.error(
+        "JAKO STORE: product or #productRoot was not found.",
+        productId
+    );
+
+    return;
+}
 
 const WHATSAPP_NUMBER =
     STORE.WHATSAPP_NUMBER ||
     STORE.whatsappNumber ||
-    (typeof STORE.getWhatsAppNumber === "function"
-        ? STORE.getWhatsAppNumber()
-        : "");
+    "";
 
 const SHAM_CASH_ACCOUNT =
     STORE.SHAM_CASH_ACCOUNT ||
