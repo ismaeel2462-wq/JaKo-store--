@@ -81,12 +81,6 @@
             font-size: 14px;
         }
 
-        .rate-info {
-            color: #999;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
         .notice {
             background: #332200;
             border: 1px solid #ff9800;
@@ -96,6 +90,7 @@
             margin-top: 10px;
             display: none;
             color: #ffb74d;
+            line-height: 1.8;
         }
 
         .btn-submit {
@@ -256,17 +251,9 @@
 
 <div class="container">
 
-    <div style="text-align: right; margin-bottom: 20px;">
+    <div style="text-align:right; margin-bottom:20px;">
         <a href="index.html"
-           style="background: #2a2a2a;
-                  color: #ff9800;
-                  border: 1px solid #ff9800;
-                  padding: 8px 16px;
-                  border-radius: 6px;
-                  text-decoration: none;
-                  font-size: 14px;
-                  font-weight: bold;
-                  display: inline-block;">
+           style="background:#2a2a2a;color:#ff9800;border:1px solid #ff9800;padding:8px 16px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:bold;display:inline-block;">
             ⬅️
         </a>
     </div>
@@ -294,8 +281,8 @@
             <label for="package">اختر كمية الشدات (UC):</label>
 
             <select id="package" required>
-                <option value="60 شدة (UC)" data-usd="1.99">60 شدة (UC) - $1.99</option>
-                <option value="325 شدة (UC)" data-usd="5.99">325 شدة (UC) - $5.99</option>
+                <option value="60 شدة (UC)" data-usd="1.50">60 شدة (UC) - $1.50</option>
+                <option value="325 شدة (UC)" data-usd="4.80">325 شدة (UC) - $4.80</option>
                 <option value="660 شدة (UC)" data-usd="10.99">660 شدة (UC) - $10.99</option>
                 <option value="1800 شدة (UC)" data-usd="26.99">1800 شدة (UC) - $26.99</option>
                 <option value="3850 شدة (UC)" data-usd="52.99">3850 شدة (UC) - $52.99</option>
@@ -306,12 +293,10 @@
 
             <div class="price-box">
                 <div class="price-main" id="priceSYP">
-                    جارٍ تحميل سعر الصرف...
+                    جارٍ تحميل السعر...
                 </div>
 
                 <div class="price-usd" id="priceUSD"></div>
-
-                <div class="rate-info" id="rateInfo"></div>
             </div>
         </div>
 
@@ -322,12 +307,13 @@
                 <option value="">-- اختر طريقة الدفع --</option>
                 <option value="شام كاش">شام كاش (Cham Cash)</option>
                 <option value="بطاقات جوجل بلاي">بطاقة جوجل بلاي (Google Play)</option>
+                <option value="الطلب عبر واتساب">الطلب عبر واتساب (الدفع لاحقاً)</option>
             </select>
 
             <div id="paymentNotice" class="notice"></div>
         </div>
 
-        <div class="form-group" id="googleCodeGroup" style="display: none;">
+        <div class="form-group" id="googleCodeGroup" style="display:none;">
             <label for="googleCode">أدخل كود بطاقة جوجل بلاي:</label>
 
             <input
@@ -345,8 +331,8 @@
 </div>
 
 <!-- نافذة شام كاش -->
-<div id="qrModal" class="modal">
 
+<div id="qrModal" class="modal">
     <div class="modal-content">
 
         <span class="close-icon" onclick="closePopup()">&times;</span>
@@ -364,7 +350,7 @@
             >
         </div>
 
-        <p style="font-size:15px; color:#ccc;">
+        <p style="font-size:15px;color:#ccc;">
             رقم الحساب:
             <strong style="color:#ff9800;" id="accountNum">
                 0976567876
@@ -373,6 +359,7 @@
 
         <div class="note-instructions">
             <strong>⚠️ مهم جداً قبل التحويل</strong>
+
             <p>
                 انسخ الرقم التالي وضعه في خانة
                 <strong>الملاحظة</strong> داخل تطبيق شام كاش
@@ -390,7 +377,7 @@
             </div>
         </div>
 
-        <p style="color:#ffb74d; font-size:13px; margin-top:15px;">
+        <p style="color:#ffb74d;font-size:13px;margin-top:15px;">
             بعد إتمام التحويل ووضع الرقم في الملاحظة،
             اضغط على الزر أدناه لإرسال تفاصيل الطلب عبر واتساب.
         </p>
@@ -425,9 +412,10 @@
 
     let currentNoteCode = null;
     let isGeneratingNote = false;
+    let isSendingOrder = false;
     let currentExchangeRate = null;
 
-    // تنسيق الأرقام مع الحفاظ على الكسور دون تقريب
+    // تنسيق الأرقام دون تقريب
 
     function formatDecimalString(value) {
         let parts = String(value).split(".");
@@ -441,7 +429,7 @@
             : integerPart;
     }
 
-    // ضرب رقمين عشريين بدقة دون أخطاء الكسور العشرية العائمة
+    // ضرب الأرقام العشرية بدقة
 
     function multiplyDecimals(first, second) {
         function parseDecimal(value) {
@@ -487,7 +475,7 @@
         return resultText;
     }
 
-    // قراءة سعر الصرف من قاعدة البيانات
+    // تحميل سعر الصرف من Supabase في الخلفية
 
     async function loadExchangeRate() {
         const { data, error } = await supabaseClient
@@ -513,7 +501,7 @@
         updatePackagePrice();
     }
 
-    // جلب الباقة المحددة
+    // الباقة المحددة
 
     function getSelectedPackage() {
         const select = document.getElementById("package");
@@ -525,42 +513,44 @@
         };
     }
 
-    // حساب وعرض السعر
+    // تحديث الأسعار المعروضة دون إظهار سعر الصرف
 
     function updatePackagePrice() {
-    const priceSYP = document.getElementById("priceSYP");
+        const priceSYP = document.getElementById("priceSYP");
+        const priceUSD = document.getElementById("priceUSD");
 
-    if (!priceSYP) {
-        console.error("عنصر عرض السعر غير موجود.");
-        return;
-    }
-
-    if (!currentExchangeRate) {
-        priceSYP.textContent = "جارٍ تحميل السعر...";
-        return;
-    }
-
-    const selected = getSelectedPackage();
-
-    try {
-        if (!selected.usd) {
-            priceSYP.textContent = "اختر باقة الشحن";
+        if (!currentExchangeRate) {
+            priceSYP.textContent = "جارٍ تحميل السعر...";
+            priceUSD.textContent = "";
             return;
         }
 
-        const converted = multiplyDecimals(
-            selected.usd,
-            currentExchangeRate
-        );
+        const selected = getSelectedPackage();
 
-        priceSYP.textContent =
-            formatDecimalString(converted) + " ل.س";
+        try {
+            if (!selected.usd) {
+                priceSYP.textContent = "اختر باقة الشحن";
+                priceUSD.textContent = "";
+                return;
+            }
 
-    } catch (error) {
-        priceSYP.textContent = "تعذر حساب السعر";
-        console.error("Price calculation error:", error);
+            const converted = multiplyDecimals(
+                selected.usd,
+                currentExchangeRate
+            );
+
+            priceSYP.textContent =
+                formatDecimalString(converted) + " ل.س";
+
+            priceUSD.textContent =
+                "السعر الأصلي: $" + selected.usd;
+
+        } catch (error) {
+            priceSYP.textContent = "تعذر حساب السعر";
+            priceUSD.textContent = "";
+            console.error("Price calculation error:", error);
+        }
     }
-}
 
     document
         .getElementById("package")
@@ -586,7 +576,7 @@
         }
     }
 
-    // إنشاء رقم ملاحظة جديد من Supabase
+    // إنشاء رقم ملاحظة شام كاش
 
     async function generateNoteCode() {
         const { data, error } = await supabaseClient.rpc(
@@ -621,6 +611,7 @@
 
         } catch (error) {
             const tempInput = document.createElement("textarea");
+
             tempInput.value = currentNoteCode;
             tempInput.style.position = "fixed";
             tempInput.style.opacity = "0";
@@ -640,7 +631,7 @@
         }
     }
 
-    // التعامل مع طريقة الدفع
+    // تغيير طريقة الدفع
 
     function handlePaymentChange() {
         const method =
@@ -652,24 +643,33 @@
         const googleGroup =
             document.getElementById("googleCodeGroup");
 
+        const googleCode =
+            document.getElementById("googleCode");
+
         notice.style.display = "none";
         googleGroup.style.display = "none";
-
-        document.getElementById("googleCode").required = false;
+        googleCode.required = false;
 
         if (method === "شام كاش") {
             notice.style.display = "block";
             notice.textContent =
-                "💰 ستظهر نافذة التحويل ورقم الملاحظة الخاص بطلبك بعد إرسال الطلب.";
+                "💰 ستظهر نافذة التحويل ورقم الملاحظة الخاص بطلبك بعد متابعة الطلب.";
         }
 
         else if (method === "بطاقات جوجل بلاي") {
             notice.style.display = "block";
             googleGroup.style.display = "block";
-            document.getElementById("googleCode").required = true;
+            googleCode.required = true;
 
             notice.textContent =
                 "💳 يرجى كتابة كود بطاقة جوجل بلاي بالأسفل بدقة.";
+        }
+
+        else if (method === "الطلب عبر واتساب") {
+            notice.style.display = "block";
+
+            notice.textContent =
+                "📲 سيتم إرسال طلب الشحن مباشرة عبر واتساب دون دفع مسبق، وسيتم الاتفاق على الدفع لاحقاً.";
         }
     }
 
@@ -703,12 +703,14 @@
     // تأكيد شام كاش
 
     async function confirmChamCash() {
+        if (isSendingOrder) return;
+
         const session = await checkLogin();
 
         if (!session) {
             closePopup();
 
-            alert("🔐 انتهت جلسة تسجيل الدخول. يرجى تسجيل الدخول مجدداً.");
+            alert("انتهت جلسة تسجيل الدخول. يرجى تسجيل الدخول مجدداً.");
 
             goToLogin();
             return;
@@ -727,158 +729,203 @@
             return;
         }
 
-        const confirmBtn =
-            document.getElementById("confirmBtn");
+       const confirmBtn =
+    document.getElementById("confirmBtn");
 
-        confirmBtn.disabled = true;
+confirmBtn.disabled = true;
+confirmBtn.textContent =
+    "✅ تم التحويل، إرسال الطلب عبر واتساب";
+        await sendWhatsAppOrder();
+    }                           
 
-        try {
-            await sendWhatsAppOrder();
+// استقبال طلب الشحن
+document
+    .getElementById("orderForm")
+        .addEventListener("submit", async function(event) {
 
-        } catch (error) {
-            console.error("Order error:", error);
-            alert("حدث خطأ أثناء تجهيز الطلب: " + error.message);
+            event.preventDefault();
 
-        } finally {
-            confirmBtn.disabled = false;
-        }
-    }
-// استقبال طلب الشحن وفتح نافذة الدفع
+            if (isSendingOrder || isGeneratingNote) return;
 
-    document.getElementById("orderForm").addEventListener("submit", async function(event) {
-        event.preventDefault();
+            const session = await checkLogin();
 
-        const session = await checkLogin();
-
-        if (!session) {
-            alert("يرجى تسجيل الدخول أولاً.");
-            goToLogin();
-            return;
-        }
-
-        const playerId = document.getElementById("playerId").value.trim();
-        const paymentMethod = document.getElementById("paymentMethod").value;
-
-        if (!playerId) {
-            alert("يرجى إدخال Player ID.");
-            return;
-        }
-
-        if (!paymentMethod) {
-            alert("يرجى اختيار طريقة الدفع.");
-            return;
-        }
-
-        if (paymentMethod === "شام كاش") {
-            const modal = document.getElementById("qrModal");
-            const confirmBtn = document.getElementById("confirmBtn");
-
-            confirmBtn.disabled = true;
-            confirmBtn.textContent = "جارٍ إنشاء رقم الملاحظة...";
-
-            modal.style.display = "flex";
-
-            try {
-                currentNoteCode = await generateNoteCode();
-
-                document.getElementById("noteCode").textContent =
-                    currentNoteCode;
-
-            } catch (error) {
-                console.error(error);
-                alert("تعذر إنشاء رقم الملاحظة. حاول مجدداً.");
-                closePopup();
-
-            } finally {
-                confirmBtn.disabled = false;
-                confirmBtn.textContent =
-                    "✅ تم التحويل، إرسال الطلب عبر واتساب";
-            }
-
-        } else if (paymentMethod === "بطاقات جوجل بلاي") {
-            const googleCode =
-                document.getElementById("googleCode").value.trim();
-
-            if (!googleCode) {
-                alert("يرجى إدخال كود بطاقة جوجل بلاي.");
+            if (!session) {
+                alert("يرجى تسجيل الدخول أولاً.");
+                goToLogin();
                 return;
             }
 
-            await sendWhatsAppOrder();
-        }
-    });
+            const playerId =
+                document.getElementById("playerId").value.trim();
+
+            const paymentMethod =
+                document.getElementById("paymentMethod").value;
+
+            if (!playerId) {
+                alert("يرجى إدخال Player ID.");
+                return;
+            }
+
+            if (!paymentMethod) {
+                alert("يرجى اختيار طريقة الدفع.");
+                return;
+            }
+
+            // شام كاش
+
+            if (paymentMethod === "شام كاش") {
+                const modal = document.getElementById("qrModal");
+                const confirmBtn = document.getElementById("confirmBtn");
+
+                isGeneratingNote = true;
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = "جارٍ إنشاء رقم الملاحظة...";
+
+                modal.style.display = "flex";
+
+                try {
+                    currentNoteCode = await generateNoteCode();
+
+                    document.getElementById("noteCode").textContent =
+                        currentNoteCode;
+
+                } catch (error) {
+                    console.error(error);
+                    alert("تعذر إنشاء رقم الملاحظة. حاول مجدداً.");
+                    closePopup();
+
+                } finally {
+                    isGeneratingNote = false;
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent =
+                        "✅ تم التحويل، إرسال الطلب عبر واتساب";
+                }
+            }
+
+            // بطاقات Google Play
+
+            else if (paymentMethod === "بطاقات جوجل بلاي") {
+                const googleCode =
+                    document.getElementById("googleCode").value.trim();
+
+                if (!googleCode) {
+                    alert("يرجى إدخال كود بطاقة جوجل بلاي.");
+                    return;
+                }
+
+                await sendWhatsAppOrder();
+            }
+
+            // الطلب عبر واتساب دون دفع مسبق
+
+            else if (paymentMethod === "الطلب عبر واتساب") {
+                const confirmed = confirm(
+                    "سيتم إرسال طلب الشحن عبر واتساب دون دفع مسبق. هل تريد المتابعة؟"
+                );
+
+                if (!confirmed) return;
+
+                await sendWhatsAppOrder();
+            }
+        });
+
     // إرسال الطلب إلى واتساب
 
     async function sendWhatsAppOrder() {
-        const session = await checkLogin();
+        if (isSendingOrder) return;
 
-        if (!session) {
-            alert("يرجى تسجيل الدخول أولاً.");
-            goToLogin();
-            return;
-        }
+        isSendingOrder = true;
 
-        const playerId =
-            document.getElementById("playerId").value.trim();
+        try {
+            const session = await checkLogin();
 
-        const selected = getSelectedPackage();
-
-        const paymentMethod =
-            document.getElementById("paymentMethod").value;
-
-        if (!playerId || !selected.usd || !paymentMethod) {
-            alert("يرجى التأكد من إدخال جميع بيانات الطلب.");
-            return;
-        }
-
-        if (!currentExchangeRate) {
-            await loadExchangeRate();
-        }
-
-        const priceSYP = multiplyDecimals(
-            selected.usd,
-            currentExchangeRate
-        );
-
-        let message =
-            "🛒 *طلب شحن جديد - JAKO STORE*\n\n" +
-            "🎮 اللعبة: PUBG Mobile\n" +
-            "🆔 Player ID: " + playerId + "\n" +
-            "📦 الباقة: " + selected.name + "\n" +
-            "💰 السعر: " + formatDecimalString(priceSYP) + " ل.س\n" +
-            "💳 طريقة الدفع: " + paymentMethod + "\n";
-
-        if (paymentMethod === "شام كاش") {
-            if (!currentNoteCode) {
-                alert("رقم الملاحظة غير موجود.");
+            if (!session) {
+                alert("يرجى تسجيل الدخول أولاً.");
+                goToLogin();
                 return;
             }
 
-            message +=
-                "🔢 رقم الملاحظة: " + currentNoteCode + "\n";
-        }
+            const playerId =
+                document.getElementById("playerId").value.trim();
 
-        if (paymentMethod === "بطاقات جوجل بلاي") {
-            const googleCode =
-                document.getElementById("googleCode").value.trim();
+            const selected = getSelectedPackage();
 
-            if (!googleCode) {
-                alert("يرجى إدخال كود البطاقة.");
+            const paymentMethod =
+                document.getElementById("paymentMethod").value;
+
+            if (!playerId || !selected.usd || !paymentMethod) {
+                alert("يرجى التأكد من إدخال جميع بيانات الطلب.");
                 return;
             }
 
-            message += "🎟️ كود البطاقة: " + googleCode + "\n";
+            if (!currentExchangeRate) {
+                await loadExchangeRate();
+            }
+
+            if (!currentExchangeRate) {
+                throw new Error("تعذر الحصول على سعر الصرف.");
+            }
+
+            const priceSYP = multiplyDecimals(
+                selected.usd,
+                currentExchangeRate
+            );
+
+            let message =
+                "🛒 *طلب شحن جديد - JAKO STORE*\n\n" +
+                "🎮 اللعبة: PUBG Mobile\n" +
+                "🆔 Player ID: " + playerId + "\n" +
+                "📦 الباقة: " + selected.name + "\n" +
+                "💰 السعر بالليرة: " +
+                formatDecimalString(priceSYP) + " ل.س\n" +
+                "💵 السعر بالدولار: $" + selected.usd + "\n" +
+                "💳 طريقة الطلب: " + paymentMethod + "\n";
+
+            if (paymentMethod === "شام كاش") {
+                if (!currentNoteCode) {
+                    alert("رقم الملاحظة غير موجود.");
+                    return;
+                }
+
+                message +=
+                    "🔢 رقم الملاحظة: " + currentNoteCode + "\n" +
+                    "📌 حالة الدفع: بانتظار تأكيد التحويل\n";
+            }
+
+            else if (paymentMethod === "بطاقات جوجل بلاي") {
+                const googleCode =
+                    document.getElementById("googleCode").value.trim();
+
+                if (!googleCode) {
+                    alert("يرجى إدخال كود البطاقة.");
+                    return;
+                }
+
+                message +=
+                    "🎟️ كود البطاقة: " + googleCode + "\n" +
+                    "📌 حالة الدفع: بانتظار مراجعة البطاقة\n";
+            }
+
+            else if (paymentMethod === "الطلب عبر واتساب") {
+                message +=
+                    "📌 حالة الدفع: لم يتم الدفع مسبقاً\n" +
+                    "🤝 سيتم الاتفاق على طريقة الدفع لاحقاً\n";
+            }
+
+            message += "\n✅ بانتظار تأكيد الطلب.";
+
+            const whatsappURL =
+                "https://wa.me/" + WHATSAPP_NUMBER +
+                "?text=" + encodeURIComponent(message);
+
+            window.location.href = whatsappURL;
+
+        } finally {
+            isSendingOrder = false;
         }
-
-        message += "\n✅ بانتظار تأكيد الطلب.";
-
-        const whatsappURL =
-            "https://wa.me/" + WHATSAPP_NUMBER +
-            "?text=" + encodeURIComponent(message);
-
-        window.location.href = whatsappURL;
     }
-       // تهيئة الصفحة عند فتحها
+
+    // تهيئة الصفحة عند فتحها
 
     document.addEventListener("DOMContentLoaded", async () => {
         const submitBtn = document.getElementById("submitBtn");
@@ -892,6 +939,7 @@
             }
 
             await loadExchangeRate();
+
             updatePackagePrice();
 
             submitBtn.disabled = false;

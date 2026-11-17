@@ -8,149 +8,244 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    padding:20px;
+    background:#121212;
+    color:#fff;
+    font-family:Arial,sans-serif;
 }
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    padding: 20px;
-    background: #121212;
-    color: white;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.container{
+    width:100%;
+    max-width:1000px;
+    margin:auto;
 }
 
-.container {
-    width: 100%;
-    max-width: 460px;
-    background: #1e1e1e;
-    padding: 28px;
-    border: 1px solid #333;
-    border-radius: 16px;
-    box-shadow: 0 10px 35px #0008;
+.logo{
+    text-align:center;
+    color:#ff9800;
+    font-size:30px;
+    font-weight:bold;
+    margin:15px 0 5px;
 }
 
-.logo {
-    text-align: center;
-    color: #ff9800;
-    font-size: 29px;
-    font-weight: bold;
-    margin-bottom: 5px;
+.subtitle{
+    text-align:center;
+    color:#aaa;
+    margin-bottom:25px;
 }
 
-.subtitle {
-    text-align: center;
-    color: #aaa;
-    margin-bottom: 28px;
+.nav{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
 }
 
-.rate-card {
-    background: #292929;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 25px;
+.nav button{
+    flex:1;
+    min-width:110px;
+    margin:0;
+    background:#292929;
+    color:#fff;
+    font-size:14px;
 }
 
-.rate-card p {
-    color: #aaa;
-    margin: 0 0 12px;
+.nav button.active{
+    background:#ff9800;
+    color:#111;
 }
 
-.rate {
-    color: #ff9800;
-    font-size: 27px;
-    font-weight: bold;
-    direction: ltr;
+.panel{
+    background:#1e1e1e;
+    border:1px solid #333;
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:18px;
 }
 
-.updated {
-    color: #888;
-    font-size: 12px;
-    margin-top: 12px;
+.section{display:none}
+.section.active{display:block}
+
+h2{
+    color:#ff9800;
+    margin-top:0;
+    font-size:21px;
 }
 
-label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
+h3{
+    font-size:16px;
+    margin-top:0;
 }
 
-input {
-    width: 100%;
-    padding: 15px;
-    background: #111;
-    border: 1px solid #444;
-    border-radius: 8px;
-    color: white;
-    font-size: 19px;
-    text-align: center;
-    direction: ltr;
-    outline: none;
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
+    margin-bottom:18px;
 }
 
-input:focus {
-    border-color: #ff9800;
+.stat{
+    background:#292929;
+    padding:18px;
+    border-radius:12px;
 }
 
-.preview {
-    background: #292929;
-    border-radius: 8px;
-    padding: 13px;
-    margin-top: 15px;
-    color: #ddd;
-    text-align: center;
-    line-height: 1.8;
+.stat small{
+    display:block;
+    color:#aaa;
+    margin-bottom:10px;
 }
 
-.preview strong {
-    color: #ff9800;
+.stat strong{
+    color:#ff9800;
+    font-size:23px;
+    overflow-wrap:anywhere;
 }
 
-button {
-    width: 100%;
-    border: none;
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 18px;
-    background: #ff9800;
-    color: #111;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
+input,select,textarea{
+    display:block;
+    width:100%;
+    padding:14px;
+    background:#111;
+    color:white;
+    border:1px solid #444;
+    border-radius:8px;
+    margin:9px 0 17px;
+    font-size:15px;
+    outline:none;
 }
 
-button:disabled {
-    opacity: .5;
-    cursor: wait;
+input:focus,select:focus,textarea:focus{
+    border-color:#ff9800;
 }
 
-.logout {
-    background: #333;
-    color: white;
-    margin-top: 10px;
+label{
+    display:block;
+    font-weight:bold;
+    margin-top:12px;
 }
 
-#message {
-    text-align: center;
-    margin-top: 16px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
+button{
+    border:0;
+    border-radius:8px;
+    padding:13px;
+    background:#ff9800;
+    color:#111;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:5px;
 }
 
-.success { color: #4caf50; }
-.error { color: #ff5252; }
+button:disabled{
+    opacity:.5;
+    cursor:wait;
+}
 
-.note {
-    color: #888;
-    font-size: 12px;
-    text-align: center;
-    margin-top: 20px;
-    line-height: 1.8;
+.action{
+    width:100%;
+}
+
+.secondary{
+    background:#333;
+    color:#fff;
+}
+
+.danger{
+    background:#b71c1c;
+    color:#fff;
+}
+
+.success-text{color:#4caf50}
+.error-text{color:#ff5252}
+
+.message{
+    margin:12px 0;
+    text-align:center;
+    line-height:1.8;
+    overflow-wrap:anywhere;
+}
+
+.muted{
+    color:#999;
+    font-size:13px;
+    line-height:1.8;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:550px;
+    margin-top:10px;
+}
+
+th,td{
+    padding:13px 10px;
+    border-bottom:1px solid #383838;
+    text-align:right;
+    font-size:13px;
+}
+
+th{color:#ff9800}
+
+.rate{
+    color:#ff9800;
+    font-size:25px;
+    direction:ltr;
+    text-align:center;
+    font-weight:bold;
+}
+
+.rate-card{
+    background:#292929;
+    padding:18px;
+    border-radius:12px;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:6px;
+    background:#333;
+    font-size:12px;
+}
+
+.empty{
+    color:#888;
+    text-align:center;
+    padding:20px;
+}
+
+.logout{
+    background:#333;
+    color:white;
+    width:100%;
+    margin-top:10px;
+}
+
+.preview{
+    color:#ddd;
+    background:#292929;
+    padding:12px;
+    border-radius:8px;
+    line-height:1.8;
+}
+
+@media(max-width:500px){
+    body{padding:10px}
+    .panel{padding:14px}
+    .logo{font-size:25px}
+    .nav button{min-width:45%}
 }
 </style>
 </head>
@@ -159,201 +254,1292 @@ button:disabled {
 
 <div class="container">
 
-    <div class="logo">JAKO STORE</div>
-    <div class="subtitle">لوحة إدارة أسعار المتجر</div>
+<div class="logo">JAKO STORE</div>
+<div class="subtitle">لوحة الإدارة المالية وإدارة المخزون</div>
 
-    <div class="rate-card">
-        <p>سعر الصرف الحالي</p>
-        <div class="rate" id="currentRate">جارٍ التحميل...</div>
-        <div class="updated" id="updatedAt"></div>
+<div id="loading" class="panel">
+    <p class="empty">جارٍ التحقق من صلاحيات المدير...</p>
+</div>
+
+<div id="dashboard" style="display:none">
+
+<div class="nav">
+    <button class="active" onclick="showSection('home',this)">الرئيسية</button>
+    <button onclick="showSection('wallet',this)">المحفظة</button>
+    <button onclick="showSection('inventory',this)">المخزون</button>
+    <button onclick="showSection('sales',this)">بيع المخزون</button>
+    <button onclick="showSection('rate',this)">سعر الصرف</button>
+    <button onclick="showSection('cocPrices',this)">
+    أسعار Clash of Clans
+</button>
+</div>
+
+<!-- HOME -->
+
+<div id="home" class="section active">
+
+<div class="grid">
+
+    <div class="stat">
+        <small>رصيد المحفظة</small>
+        <strong id="homeBalance">0 ل.س</strong>
     </div>
 
-    <label for="exchangeRate">
-        سعر الدولار مقابل الليرة السورية
-    </label>
-
-    <input
-        type="number"
-        id="exchangeRate"
-        min="0.0001"
-        step="any"
-        placeholder="مثال: 14650"
-    >
-
-    <div class="preview" id="preview">
-        أدخل السعر لمشاهدة مثال التحويل.
+    <div class="stat">
+        <small>إجمالي الإيرادات المسجلة</small>
+        <strong id="homeSales">0 ل.س</strong>
     </div>
 
-    <button id="saveBtn" onclick="saveRate()">
-        حفظ سعر الصرف
-    </button>
+    <div class="stat">
+        <small>إجمالي المصاريف المسجلة</small>
+        <strong id="homeExpenses">0 ل.س</strong>
+    </div>
 
-    <div id="message"></div>
-
-    <button class="logout" onclick="logout()">
-        تسجيل الخروج
-    </button>
-
-    <div class="note">
-        يتم تطبيق السعر الجديد على الصفحات المرتبطة بنظام الأسعار المركزي.
+    <div class="stat">
+        <small>صافي حركة الأموال</small>
+        <strong id="homeNet">0 ل.س</strong>
     </div>
 
 </div>
 
+<div class="panel">
+    <h2>ملخص المخزون</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>اللعبة</th>
+                    <th>المنتج</th>
+                    <th>الوحدة</th>
+                    <th>الكمية</th>
+                </tr>
+            </thead>
+            <tbody id="homeInventory"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>آخر العمليات المالية</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>النوع</th>
+                    <th>المبلغ</th>
+                    <th>الوصف</th>
+                    <th>التاريخ</th>
+                </tr>
+            </thead>
+            <tbody id="homeTransactions"></tbody>
+        </table>
+    </div>
+</div>
+
+<p class="muted">
+الأرقام المعروضة تمثل حركة الأموال الفعلية المسجلة.
+صافي حركة الأموال ليس بالضرورة الربح المحاسبي الصافي.
+</p>
+
+</div>
+
+<!-- WALLET -->
+
+<div id="wallet" class="section">
+
+<div class="panel">
+    <h2>المحفظة المالية</h2>
+
+    <div class="stat">
+        <small>الرصيد الحالي بالليرة السورية</small>
+        <strong id="walletBalance">0 ل.س</strong>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>تسجيل حركة مالية</h2>
+
+    <label>نوع العملية</label>
+    <select id="walletType">
+        <option value="deposit">إيداع / إضافة رصيد</option>
+        <option value="expense">مصروف / سحب</option>
+        <option value="sale">إيراد بيع خارجي</option>
+        <option value="refund">استرداد مبلغ</option>
+        <option value="adjustment">تسوية رصيد</option>
+    </select>
+
+    <label>المبلغ بالليرة السورية</label>
+    <input id="walletAmount" type="number"
+        min="0.01" step="0.01"
+        placeholder="أدخل المبلغ">
+
+    <label>الوصف</label>
+    <input id="walletDescription"
+        placeholder="مثال: إيداع رأس المال">
+
+    <button class="action" id="walletSaveBtn"
+        onclick="saveWalletTransaction()">
+        تسجيل العملية
+    </button>
+
+    <div id="walletMessage" class="message"></div>
+
+    <p class="muted">
+    المصاريف تُخصم من الرصيد تلقائياً.
+    الإيداعات والإيرادات والاستردادات تضاف إليه.
+    التسوية تقبل مبلغاً موجباً أو سالباً.
+    </p>
+</div>
+
+<div class="panel">
+    <h2>سجل المحفظة</h2>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>العملية</th>
+                    <th>المبلغ</th>
+                    <th>الوصف</th>
+                    <th>التاريخ</th>
+                </tr>
+            </thead>
+            <tbody id="walletTransactions"></tbody>
+        </table>
+    </div>
+</div>
+
+</div>
+
+<!-- INVENTORY -->
+
+<div id="inventory" class="section">
+
+<div class="panel">
+    <h2>شراء وإضافة مخزون</h2>
+
+    <label>اسم اللعبة</label>
+    <select id="purchaseGame">
+        <option value="PUBG Mobile">PUBG Mobile</option>
+        <option value="Free Fire">Free Fire</option>
+        <option value="Yalla Ludo">Yalla Ludo</option>
+        <option value="Bigo Live">Bigo Live</option>
+        <option value="TikTok">TikTok</option>
+        <option value="Other">أخرى</option>
+    </select>
+
+    <label>اسم المنتج أو الفئة</label>
+    <input id="purchaseItem"
+        placeholder="مثال: 60 UC أو 110 Diamonds">
+
+    <label>الوحدة</label>
+    <select id="purchaseUnit">
+        <option value="شدة">شدة</option>
+        <option value="ماسة">ماسة</option>
+        <option value="عملة">عملة</option>
+        <option value="نقطة">نقطة</option>
+        <option value="كود">كود</option>
+        <option value="وحدة">وحدة</option>
+    </select>
+
+    <label>الكمية المشتراة</label>
+    <input id="purchaseQuantity" type="number"
+        min="0.01" step="0.01" placeholder="مثال: 1000">
+
+    <label>إجمالي تكلفة الشراء بالليرة السورية</label>
+    <input id="purchaseCost" type="number"
+        min="0.01" step="0.01" placeholder="مثال: 50000">
+
+    <label>ملاحظات</label>
+    <input id="purchaseDescription"
+        placeholder="اسم المورد أو تفاصيل الشراء">
+
+    <button class="action" id="purchaseBtn"
+        onclick="purchaseStock()">
+        إضافة المخزون وتسجيل المصروف
+    </button>
+
+    <div id="purchaseMessage" class="message"></div>
+
+    <p class="muted">
+    هذه العملية تضيف الكمية للمخزون وتخصم تكلفة الشراء
+    من المحفظة المالية تلقائياً في عملية واحدة.
+    </p>
+</div>
+
+<div class="panel">
+    <h2>إضافة أو تسوية كمية يدوياً</h2>
+
+    <label>المنتج</label>
+    <select id="adjustItem">
+        <option value="">جارٍ تحميل المنتجات...</option>
+    </select>
+
+    <label>الكمية</label>
+    <input id="adjustQuantity" type="number"
+        step="0.01" placeholder="موجب للإضافة وسالب للخصم">
+
+    <label>السبب</label>
+    <input id="adjustDescription"
+        placeholder="مثال: تصحيح جرد المخزون">
+
+    <button class="action" onclick="adjustStock()">
+        حفظ تعديل المخزون
+    </button>
+
+    <div id="adjustMessage" class="message"></div>
+</div>
+
+<div class="panel">
+    <h2>المخزون الحالي</h2>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>اللعبة</th>
+                    <th>المنتج</th>
+                    <th>الوحدة</th>
+                    <th>الكمية المتبقية</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>سجل حركة المخزون</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>النوع</th>
+                    <th>الكمية</th>
+                    <th>تكلفة العملية</th>
+                    <th>التفاصيل</th>
+                    <th>التاريخ</th>
+                </tr>
+            </thead>
+            <tbody id="movementTable"></tbody>
+        </table>
+    </div>
+</div>
+
+</div>
+
+<!-- SALES -->
+
+<div id="sales" class="section">
+
+<div class="panel">
+    <h2>تسجيل بيع من المخزون</h2>
+
+    <label>اختر المنتج</label>
+    <select id="saleItem">
+        <option value="">جارٍ تحميل المنتجات...</option>
+    </select>
+
+    <label>الكمية المباعة</label>
+    <input id="saleQuantity" type="number"
+        min="0.01" step="0.01"
+        placeholder="أدخل الكمية">
+
+    <label>إجمالي سعر البيع بالليرة السورية</label>
+    <input id="saleAmount" type="number"
+        min="0.01" step="0.01"
+        placeholder="أدخل سعر البيع">
+
+    <label>ملاحظات أو رقم الطلب</label>
+    <input id="saleDescription"
+        placeholder="مثال: طلب رقم 105">
+
+    <button class="action" id="saleBtn"
+        onclick="sellStock()">
+        تأكيد البيع وخصم المخزون
+    </button>
+
+    <div id="saleMessage" class="message"></div>
+
+    <p class="muted">
+    عند التأكيد يتم خصم الكمية وإضافة إيراد البيع
+    إلى المحفظة بشكل ذري. لا يمكن بيع كمية غير متوفرة.
+    </p>
+</div>
+
+</div>
+
+<!-- EXCHANGE RATE -->
+
+<div id="rate" class="section">
+
+<div class="panel">
+    <h2>إدارة سعر الصرف</h2>
+
+    <div class="rate-card">
+        <p class="muted">سعر الصرف الحالي</p>
+        <div class="rate" id="currentRate">جارٍ التحميل...</div>
+        <p class="muted" id="updatedAt"></p>
+    </div>
+
+    <label>سعر الدولار مقابل الليرة السورية</label>
+    <input type="number" id="exchangeRate"
+        min="0.0001" step="any"
+        placeholder="مثال: 14650">
+
+    <div class="preview" id="ratePreview">
+        أدخل السعر لمشاهدة مثال التحويل.
+    </div>
+
+    <button class="action" id="saveRateBtn"
+        onclick="saveRate()">
+        حفظ سعر الصرف
+    </button>
+
+    <div id="rateMessage" class="message"></div>
+</div>
+
+</div>
+<!-- CLASH OF CLANS PRICES -->
+
+<div id="cocPrices" class="section">
+
+    <div class="panel">
+        <h2>إدارة أسعار Clash of Clans</h2>
+
+        <p class="muted">
+            أدخل أسعار المنتجات بالدولار. سيتم تحويلها
+            إلى الليرة السورية باستخدام سعر الصرف المحفوظ.
+        </p>
+
+        <h3>أسعار الجواهر</h3>
+
+        <label>80 جوهرة - بالدولار</label>
+        <input id="cocGem80" type="number" min="0.01" step="0.01">
+
+        <label>500 جوهرة - بالدولار</label>
+        <input id="cocGem500" type="number" min="0.01" step="0.01">
+
+        <label>1200 جوهرة - بالدولار</label>
+        <input id="cocGem1200" type="number" min="0.01" step="0.01">
+
+        <label>2500 جوهرة - بالدولار</label>
+        <input id="cocGem2500" type="number" min="0.01" step="0.01">
+
+        <label>6500 جوهرة - بالدولار</label>
+        <input id="cocGem6500" type="number" min="0.01" step="0.01">
+
+        <label>14000 جوهرة - بالدولار</label>
+        <input id="cocGem14000" type="number" min="0.01" step="0.01">
+
+        <hr>
+
+        <h3>أسعار التصاريح</h3>
+
+        <label>Gold Pass - بالدولار</label>
+        <input id="cocGoldPass" type="number" min="0.01" step="0.01"
+            placeholder="أدخل السعر">
+
+        <label>Event Pass - بالدولار</label>
+        <input id="cocEventPass" type="number" min="0.01" step="0.01"
+            placeholder="أدخل السعر">
+
+        <button class="action" id="saveCocPricesBtn"
+            onclick="saveCocPrices()">
+            حفظ أسعار Clash of Clans
+        </button>
+
+        <div id="cocPricesMessage" class="message"></div>
+    </div>
+
+</div>
+<button class="logout" onclick="logout()">
+    تسجيل الخروج
+</button>
+
+</div>
+</div>
+
 <script>
-const client = supabase.createClient(
+const client = window.supabase.createClient(
     "https://anfpisxylmvclheoehnh.supabase.co",
     "sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S"
 );
 
 let isAdmin = false;
+let inventoryCache = [];
 
-function formatNumber(value) {
-    return Number(value).toLocaleString("en-US", {
-        maximumFractionDigits: 4
+const $ = id => document.getElementById(id);
+
+function money(value){
+    return Number(value || 0).toLocaleString("en-US",{
+        maximumFractionDigits:2
+    }) + " ل.س";
+}
+
+function number(value){
+    return Number(value || 0).toLocaleString("en-US",{
+        maximumFractionDigits:2
     });
 }
 
-function message(text, type = "") {
-    const element = document.getElementById("message");
-    element.textContent = text;
-    element.className = type;
+function showMessage(id,text,type=""){
+    const el = $(id);
+    el.textContent = text;
+    el.className = "message " +
+        (type==="success" ? "success-text" :
+         type==="error" ? "error-text" : "");
 }
 
-async function initialize() {
-    const { data: sessionData, error: sessionError } =
-        await client.auth.getSession();
-
-    if (sessionError || !sessionData.session) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    const { data: admin, error: adminError } = await client
-        .from("store_admins")
-        .select("user_id")
-        .eq("user_id", sessionData.session.user.id)
-        .maybeSingle();
-
-    if (adminError || !admin) {
-        document.querySelector(".container").innerHTML = `
-            <h2 style="color:#ff5252;text-align:center">
-                غير مصرح بالدخول
-            </h2>
-            <p style="text-align:center;color:#aaa">
-                هذا الحساب لا يملك صلاحية إدارة المتجر.
-            </p>
-            <button onclick="logout()">تسجيل الخروج</button>
-        `;
-        return;
-    }
-
-    isAdmin = true;
-    await loadRate();
+function setBusy(id,busy,text){
+    const btn = $(id);
+    btn.disabled = busy;
+    if(text) btn.textContent = busy ? "جارٍ التنفيذ..." : text;
 }
 
-async function loadRate() {
-    const { data, error } = await client
-        .from("store_settings")
-        .select("usd_to_syp, updated_at")
-        .eq("id", 1)
+function showSection(id,button){
+    document.querySelectorAll(".section")
+        .forEach(s=>s.classList.remove("active"));
+
+    document.querySelectorAll(".nav button")
+        .forEach(b=>b.classList.remove("active"));
+
+    $(id).classList.add("active");
+    button.classList.add("active");
+
+    if(id==="home") refreshDashboard();
+    if(id==="wallet") loadWallet();
+    if(id==="inventory") loadInventory();
+    if(id==="sales") loadInventory();
+    if(id==="rate") loadRate();
+    if(id==="cocPrices") loadCocPrices();
+}
+
+function addCell(row,value){
+    const td=document.createElement("td");
+    td.textContent=value ?? "";
+    row.appendChild(td);
+}
+
+function emptyRow(tbody,messageText,columns){
+    const tr=document.createElement("tr");
+    const td=document.createElement("td");
+    td.colSpan=columns;
+    td.className="empty";
+    td.textContent=messageText;
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+}
+
+async function initialize(){
+
+    try{
+        const {data,error}=await client.auth.getSession();
+
+        if(error || !data.session){
+            location.href="login.html";
+            return;
+        }
+
+        const {data:admin,error:adminError}=await client
+            .from("store_admins")
+            .select("user_id")
+            .eq("user_id",data.session.user.id)
+            .maybeSingle();
+
+        if(adminError || !admin){
+            $("loading").innerHTML=`
+                <h2 style="color:#ff5252;text-align:center">
+                    غير مصرح بالدخول
+                </h2>
+                <button onclick="logout()">تسجيل الخروج</button>
+            `;
+            return;
+        }
+
+        isAdmin=true;
+
+        $("loading").style.display="none";
+        $("dashboard").style.display="block";
+
+        await refreshDashboard();
+        await loadRate();
+
+    }catch(error){
+        $("loading").textContent=
+            "حدث خطأ: "+error.message;
+    }
+}
+
+async function getBalance(){
+
+    const {data,error}=await client
+        .from("wallet_balance")
+        .select("balance_syp")
         .single();
 
-    if (error) {
-        message("تعذر تحميل السعر: " + error.message, "error");
-        document.getElementById("currentRate").textContent = "خطأ";
-        return;
-    }
+    if(error) throw error;
 
-    if (data.usd_to_syp !== null) {
-        document.getElementById("currentRate").textContent =
-            formatNumber(data.usd_to_syp) + " ل.س";
+    return Number(data.balance_syp || 0);
+}
 
-        document.getElementById("exchangeRate").value =
-            data.usd_to_syp;
+async function loadWallet(){
 
-        updatePreview();
-    } else {
-        document.getElementById("currentRate").textContent =
-            "غير محدد";
-    }
+    try{
+        const balance=await getBalance();
 
-    if (data.updated_at) {
-        document.getElementById("updatedAt").textContent =
-            "آخر تحديث: " +
-            new Date(data.updated_at).toLocaleString("ar");
+        $("walletBalance").textContent=money(balance);
+
+        const {data,error}=await client
+            .from("wallet_transactions")
+            .select("*")
+            .order("created_at",{ascending:false})
+            .limit(50);
+
+        if(error) throw error;
+
+        renderTransactions(data || [],"walletTransactions");
+
+    }catch(error){
+        showMessage("walletMessage",error.message,"error");
     }
 }
 
-function updatePreview() {
-    const rate = Number(
-        document.getElementById("exchangeRate").value
+function renderTransactions(data,target){
+
+    const tbody=$(target);
+    tbody.innerHTML="";
+
+    if(!data.length){
+        emptyRow(tbody,"لا توجد عمليات مالية حتى الآن",4);
+        return;
+    }
+
+    const names={
+        deposit:"إيداع",
+        expense:"مصروف",
+        sale:"بيع",
+        refund:"استرداد",
+        adjustment:"تسوية"
+    };
+
+    data.forEach(item=>{
+        const tr=document.createElement("tr");
+
+        addCell(tr,names[item.transaction_type] ||
+            item.transaction_type);
+
+        addCell(tr,money(item.amount_syp));
+
+        addCell(tr,item.description || "-");
+
+        addCell(tr,new Date(item.created_at)
+            .toLocaleString("ar"));
+
+        tbody.appendChild(tr);
+    });
+}
+
+async function saveWalletTransaction(){
+
+    if(!isAdmin) return;
+
+    const type=$("walletType").value;
+    const amount=Number($("walletAmount").value);
+    const description=$("walletDescription").value.trim();
+
+    if(!Number.isFinite(amount) || amount===0){
+        showMessage("walletMessage",
+            "أدخل مبلغاً صحيحاً.","error");
+        return;
+    }
+
+    let finalAmount=Math.abs(amount);
+
+    if(type==="expense") finalAmount=-finalAmount;
+
+    if(type==="adjustment") finalAmount=amount;
+
+    setBusy("walletSaveBtn",true);
+
+    try{
+
+        const {error}=await client.rpc(
+            "admin_record_wallet_transaction",
+            {
+                p_type:type,
+                p_amount:finalAmount,
+                p_description:description || null,
+                p_reference:null
+            }
+        );
+
+        if(error) throw error;
+
+        $("walletAmount").value="";
+        $("walletDescription").value="";
+
+        showMessage("walletMessage",
+            "تم تسجيل العملية بنجاح.","success");
+
+        await loadWallet();
+        await refreshDashboard();
+
+    }catch(error){
+        showMessage("walletMessage",
+            error.message,"error");
+    }finally{
+        setBusy("walletSaveBtn",false,"تسجيل العملية");
+    }
+}
+
+async function purchaseStock(){
+
+    if(!isAdmin) return;
+
+    const game=$("purchaseGame").value;
+    const item=$("purchaseItem").value.trim();
+    const unit=$("purchaseUnit").value;
+    const quantity=Number($("purchaseQuantity").value);
+    const cost=Number($("purchaseCost").value);
+    const description=$("purchaseDescription").value.trim();
+
+    if(!item || quantity<=0 || cost<=0 ||
+       !Number.isFinite(quantity) ||
+       !Number.isFinite(cost)){
+        showMessage("purchaseMessage",
+            "يرجى إدخال اسم المنتج والكمية والتكلفة بشكل صحيح.",
+            "error");
+        return;
+    }
+
+    setBusy("purchaseBtn",true);
+
+    try{
+
+        const {error}=await client.rpc(
+            "admin_purchase_stock",
+            {
+                p_game_name:game,
+                p_item_name:item,
+                p_unit:unit,
+                p_quantity:quantity,
+                p_total_cost_syp:cost,
+                p_description:description || null
+            }
+        );
+
+        if(error) throw error;
+
+        $("purchaseItem").value="";
+        $("purchaseQuantity").value="";
+        $("purchaseCost").value="";
+        $("purchaseDescription").value="";
+
+        showMessage("purchaseMessage",
+            "تمت إضافة المخزون وتسجيل تكلفة الشراء بنجاح.",
+            "success");
+
+        await loadInventory();
+        await refreshDashboard();
+        await loadWallet();
+
+    }catch(error){
+        showMessage("purchaseMessage",
+            error.message,"error");
+    }finally{
+        setBusy("purchaseBtn",false,
+            "إضافة المخزون وتسجيل المصروف");
+    }
+}
+
+async function loadInventory(){
+
+    try{
+
+        const {data,error}=await client
+            .from("inventory_balances")
+            .select("*")
+            .order("game_name");
+
+        if(error) throw error;
+
+        inventoryCache=data || [];
+
+        renderInventory();
+        fillProductSelects();
+        await loadMovements();
+
+    }catch(error){
+        showMessage("adjustMessage",
+            error.message,"error");
+    }
+}
+
+function renderInventory(){
+
+    const tbody=$("inventoryTable");
+    const home=$("homeInventory");
+
+    tbody.innerHTML="";
+    home.innerHTML="";
+
+    if(!inventoryCache.length){
+        emptyRow(tbody,"لا يوجد مخزون حالياً",4);
+        emptyRow(home,"لا يوجد مخزون حالياً",4);
+        return;
+    }
+
+    inventoryCache.forEach(item=>{
+
+        const tr=document.createElement("tr");
+
+        addCell(tr,item.game_name);
+        addCell(tr,item.item_name);
+        addCell(tr,item.unit);
+        addCell(tr,number(item.stock_quantity));
+
+        tbody.appendChild(tr);
+
+        const tr2=document.createElement("tr");
+
+        addCell(tr2,item.game_name);
+        addCell(tr2,item.item_name);
+        addCell(tr2,item.unit);
+        addCell(tr2,number(item.stock_quantity));
+
+        home.appendChild(tr2);
+    });
+}
+
+function fillProductSelects(){
+
+    ["adjustItem","saleItem"].forEach(id=>{
+
+        const select=$(id);
+        const old=select.value;
+
+        select.innerHTML="";
+
+        const defaultOption=document.createElement("option");
+        defaultOption.value="";
+        defaultOption.textContent="اختر المنتج";
+        select.appendChild(defaultOption);
+
+        inventoryCache.forEach(item=>{
+
+            const option=document.createElement("option");
+            option.value=item.id;
+
+            option.textContent=
+                item.game_name+" - "+
+                item.item_name+" ("+
+                number(item.stock_quantity)+" "+
+                item.unit+")";
+
+            select.appendChild(option);
+        });
+
+        if(inventoryCache.some(i=>i.id===old)){
+            select.value=old;
+        }
+    });
+}
+
+async function adjustStock(){
+
+    if(!isAdmin) return;
+
+    const itemId=$("adjustItem").value;
+    const quantity=Number($("adjustQuantity").value);
+    const description=$("adjustDescription").value.trim();
+
+    if(!itemId || !Number.isFinite(quantity) || quantity===0){
+        showMessage("adjustMessage",
+            "اختر المنتج وأدخل كمية صحيحة غير صفرية.",
+            "error");
+        return;
+    }
+
+    try{
+
+        const {error}=await client.rpc(
+            "admin_adjust_inventory",
+            {
+                p_item_id:itemId,
+                p_quantity_delta:quantity,
+                p_description:description || null
+            }
+        );
+
+        if(error) throw error;
+
+        $("adjustQuantity").value="";
+        $("adjustDescription").value="";
+
+        showMessage("adjustMessage",
+            "تم تعديل المخزون بنجاح.","success");
+
+        await loadInventory();
+        await refreshDashboard();
+
+    }catch(error){
+        showMessage("adjustMessage",
+            error.message,"error");
+    }
+}
+
+async function sellStock(){
+
+    if(!isAdmin) return;
+
+    const itemId=$("saleItem").value;
+    const quantity=Number($("saleQuantity").value);
+    const amount=Number($("saleAmount").value);
+    const description=$("saleDescription").value.trim();
+
+    if(!itemId || quantity<=0 || amount<=0 ||
+       !Number.isFinite(quantity) ||
+       !Number.isFinite(amount)){
+
+        showMessage("saleMessage",
+            "يرجى اختيار المنتج وإدخال الكمية وسعر البيع.",
+            "error");
+        return;
+    }
+
+    const item=inventoryCache.find(i=>i.id===itemId);
+
+    if(item && quantity>Number(item.stock_quantity)){
+        showMessage("saleMessage",
+            "الكمية المطلوبة أكبر من المخزون المتوفر.",
+            "error");
+        return;
+    }
+
+    if(!confirm(
+        "تأكيد بيع "+quantity+
+        " من "+(item?.item_name || "المنتج")+
+        " مقابل "+money(amount)+"؟"
+    )) return;
+
+    setBusy("saleBtn",true);
+
+    try{
+
+        const {error}=await client.rpc(
+            "admin_sell_stock",
+            {
+                p_item_id:itemId,
+                p_quantity:quantity,
+                p_sale_amount_syp:amount,
+                p_description:description || null
+            }
+        );
+
+        if(error) throw error;
+
+        $("saleQuantity").value="";
+        $("saleAmount").value="";
+        $("saleDescription").value="";
+
+        showMessage("saleMessage",
+            "تم البيع وإضافة الإيراد وخصم المخزون بنجاح.",
+            "success");
+
+        await loadInventory();
+        await loadWallet();
+        await refreshDashboard();
+
+    }catch(error){
+        showMessage("saleMessage",
+            error.message,"error");
+    }finally{
+        setBusy("saleBtn",false,
+            "تأكيد البيع وخصم المخزون");
+    }
+}
+
+async function loadMovements(){
+
+    const tbody=$("movementTable");
+    tbody.innerHTML="";
+
+    const {data,error}=await client
+        .from("inventory_movements")
+        .select(`
+            *,
+            inventory_items (
+                game_name,
+                item_name,
+                unit
+            )
+        `)
+        .order("created_at",{ascending:false})
+        .limit(50);
+
+    if(error){
+        emptyRow(tbody,"تعذر تحميل سجل المخزون",5);
+        return;
+    }
+
+    if(!data.length){
+        emptyRow(tbody,"لا توجد حركات مخزون",5);
+        return;
+    }
+
+    const names={
+        purchase:"شراء",
+        sale:"بيع",
+        adjustment:"تعديل",
+        return:"إرجاع"
+    };
+
+    data.forEach(item=>{
+
+        const tr=document.createElement("tr");
+
+        addCell(tr,names[item.movement_type] ||
+            item.movement_type);
+
+        addCell(tr,
+            number(item.quantity_delta)+" "+
+            (item.inventory_items?.unit || ""));
+
+        addCell(tr,
+            item.total_cost_syp
+            ? money(item.total_cost_syp)
+            : "-");
+
+        addCell(tr,
+            (item.inventory_items?.game_name || "")+
+            " - "+
+            (item.inventory_items?.item_name || "")+
+            " | "+
+            (item.description || ""));
+
+        addCell(tr,new Date(item.created_at)
+            .toLocaleString("ar"));
+
+        tbody.appendChild(tr);
+    });
+}
+
+async function refreshDashboard(){
+
+    if(!isAdmin) return;
+
+    try{
+
+        const balance=await getBalance();
+
+        $("homeBalance").textContent=money(balance);
+
+        const {data,error}=await client
+            .from("wallet_transactions")
+            .select("transaction_type,amount_syp");
+
+        if(error) throw error;
+
+        let sales=0;
+        let expenses=0;
+
+        (data || []).forEach(t=>{
+
+            if(t.transaction_type==="sale"){
+                sales+=Number(t.amount_syp);
+            }
+
+            if(t.transaction_type==="expense"){
+                expenses+=Math.abs(Number(t.amount_syp));
+            }
+        });
+
+        $("homeSales").textContent=money(sales);
+        $("homeExpenses").textContent=money(expenses);
+        $("homeNet").textContent=money(balance);
+
+        const {data:recent,error:recentError}=await client
+            .from("wallet_transactions")
+            .select("*")
+            .order("created_at",{ascending:false})
+            .limit(8);
+
+        if(recentError) throw recentError;
+
+        renderTransactions(recent || [],"homeTransactions");
+
+        if(inventoryCache.length===0){
+
+            const {data:items}=await client
+                .from("inventory_balances")
+                .select("*");
+
+            inventoryCache=items || [];
+        }
+
+        renderInventory();
+
+    }catch(error){
+        console.error("Dashboard:",error.message);
+    }
+}
+
+async function loadRate(){
+
+    const {data,error}=await client
+        .from("store_settings")
+        .select("usd_to_syp,updated_at")
+        .eq("id",1)
+        .single();
+
+    if(error){
+        $("currentRate").textContent="خطأ";
+        showMessage("rateMessage",
+            "تعذر تحميل السعر: "+error.message,"error");
+        return;
+    }
+
+    $("currentRate").textContent=
+        data.usd_to_syp !== null
+        ? number(data.usd_to_syp)+" ل.س"
+        : "غير محدد";
+
+    if(data.usd_to_syp !== null){
+        $("exchangeRate").value=data.usd_to_syp;
+        updateRatePreview();
+    }
+
+    $("updatedAt").textContent=data.updated_at
+        ? "آخر تحديث: "+
+          new Date(data.updated_at).toLocaleString("ar")
+        : "";
+}
+
+function updateRatePreview(){
+
+    const rate=Number($("exchangeRate").value);
+
+    if(!Number.isFinite(rate) || rate<=0){
+        $("ratePreview").textContent=
+            "أدخل سعراً صحيحاً لمشاهدة التحويل.";
+        return;
+    }
+
+    $("ratePreview").textContent=
+        "مثال: $9.99 = "+money(9.99*rate);
+}
+
+$("exchangeRate").addEventListener(
+    "input",updateRatePreview
+);
+
+async function saveRate(){
+
+    if(!isAdmin) return;
+
+    const rate=Number($("exchangeRate").value);
+
+    if(!Number.isFinite(rate) || rate<=0){
+        showMessage("rateMessage",
+            "أدخل سعر صرف صحيحاً.","error");
+        return;
+    }
+
+    setBusy("saveRateBtn",true);
+
+    try{
+
+        const {data,error}=await client
+            .from("store_settings")
+            .update({usd_to_syp:rate})
+            .eq("id",1)
+            .select("id");
+
+        if(error) throw error;
+
+        if(!data || data.length===0){
+            throw new Error(
+                "لم يتم تحديث السعر. تحقق من صلاحيات المدير."
+            );
+        }
+
+        showMessage("rateMessage",
+            "تم حفظ سعر الصرف بنجاح.","success");
+
+        await loadRate();
+
+    }catch(error){
+        showMessage("rateMessage",
+            error.message,"error");
+    }finally{
+        setBusy("saveRateBtn",false,
+            "حفظ سعر الصرف");
+    }
+}
+// ================================
+// CLASH OF CLANS PRICE MANAGEMENT
+// ================================
+
+const defaultCocPrices = {
+    gems: {
+        "80": 0.99,
+        "500": 4.99,
+        "1200": 9.99,
+        "2500": 19.99,
+        "6500": 49.99,
+        "14000": 99.99
+    },
+    goldpass: null,
+    eventpass: null
+};
+
+async function loadCocPrices(){
+
+    try{
+
+        const {data,error}=await client
+            .from("store_settings")
+            .select("coc_product_prices")
+            .eq("id",1)
+            .single();
+
+        if(error) throw error;
+
+        const prices=data.coc_product_prices || defaultCocPrices;
+
+        $("cocGem80").value=prices.gems?.["80"] ?? 0.99;
+        $("cocGem500").value=prices.gems?.["500"] ?? 4.99;
+        $("cocGem1200").value=prices.gems?.["1200"] ?? 9.99;
+        $("cocGem2500").value=prices.gems?.["2500"] ?? 19.99;
+        $("cocGem6500").value=prices.gems?.["6500"] ?? 49.99;
+        $("cocGem14000").value=prices.gems?.["14000"] ?? 99.99;
+
+        $("cocGoldPass").value=prices.goldpass ?? "";
+        $("cocEventPass").value=prices.eventpass ?? "";
+
+        showMessage(
+            "cocPricesMessage",
+            "تم تحميل الأسعار بنجاح.",
+            "success"
+        );
+
+    }catch(error){
+
+        showMessage(
+            "cocPricesMessage",
+            "تعذر تحميل الأسعار: "+error.message,
+            "error"
+        );
+
+    }
+
+}
+
+async function saveCocPrices(){
+
+    if(!isAdmin) return;
+
+    const gems = {
+        "80": Number($("cocGem80").value),
+        "500": Number($("cocGem500").value),
+        "1200": Number($("cocGem1200").value),
+        "2500": Number($("cocGem2500").value),
+        "6500": Number($("cocGem6500").value),
+        "14000": Number($("cocGem14000").value)
+    };
+
+    const goldpass=Number($("cocGoldPass").value);
+    const eventpass=Number($("cocEventPass").value);
+
+    const allGemsValid=Object.values(gems).every(
+        price=>Number.isFinite(price) && price>0
     );
 
-    const preview = document.getElementById("preview");
+    const goldValid=
+        $("cocGoldPass").value.trim()==="" ||
+        (Number.isFinite(goldpass) && goldpass>0);
 
-    if (!Number.isFinite(rate) || rate <= 0) {
-        preview.textContent = "أدخل سعراً صحيحاً لمشاهدة التحويل.";
+    const eventValid=
+        $("cocEventPass").value.trim()==="" ||
+        (Number.isFinite(eventpass) && eventpass>0);
+
+    if(!allGemsValid || !goldValid || !eventValid){
+
+        showMessage(
+            "cocPricesMessage",
+            "تحقق من إدخال أسعار صحيحة وأكبر من صفر.",
+            "error"
+        );
+
         return;
     }
 
-    const example = 9.99;
+    const prices={
+        gems,
+        goldpass: $("cocGoldPass").value.trim()===""
+            ? null : goldpass,
+        eventpass: $("cocEventPass").value.trim()===""
+            ? null : eventpass
+    };
 
-    preview.innerHTML =
-        'مثال: <strong>$' + example +
-        '</strong> = <strong>' +
-        formatNumber(example * rate) +
-        ' ل.س</strong>';
+    setBusy(
+        "saveCocPricesBtn",
+        true,
+        "حفظ أسعار Clash of Clans"
+    );
+
+    try{
+
+        const {data,error}=await client
+            .from("store_settings")
+            .update({
+                coc_product_prices:prices
+            })
+            .eq("id",1)
+            .select("id");
+
+        if(error) throw error;
+
+        if(!data || data.length===0){
+            throw new Error(
+                "لم يتم حفظ الأسعار. تحقق من صلاحيات المدير."
+            );
+        }
+
+        showMessage(
+            "cocPricesMessage",
+            "تم حفظ أسعار Clash of Clans بنجاح.",
+            "success"
+        );
+
+    }catch(error){
+
+        showMessage(
+            "cocPricesMessage",
+            "حدث خطأ أثناء الحفظ: "+error.message,
+            "error"
+        );
+
+    }finally{
+
+        setBusy(
+            "saveCocPricesBtn",
+            false,
+            "حفظ أسعار Clash of Clans"
+        );
+
+    }
+
 }
+async function logout(){
 
-document.getElementById("exchangeRate")
-    .addEventListener("input", updatePreview);
-
-async function saveRate() {
-    if (!isAdmin) return;
-
-    const input = document.getElementById("exchangeRate");
-    const button = document.getElementById("saveBtn");
-    const rate = Number(input.value);
-
-    if (!input.value || !Number.isFinite(rate) || rate <= 0) {
-        message("يرجى إدخال سعر صرف صحيح أكبر من صفر.", "error");
-        return;
-    }
-
-    button.disabled = true;
-    button.textContent = "جارٍ الحفظ...";
-    message("");
-
-    const { data, error } = await client
-        .from("store_settings")
-        .update({ usd_to_syp: rate })
-        .eq("id", 1)
-        .select("id");
-
-    button.disabled = false;
-    button.textContent = "حفظ سعر الصرف";
-
-    if (error) {
-        message("فشل الحفظ: " + error.message, "error");
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        message("لم يتم تحديث السعر. تحقق من صلاحيات المدير.", "error");
-        return;
-    }
-
-    message("تم حفظ سعر الصرف بنجاح!", "success");
-    await loadRate();
-}
-
-async function logout() {
     await client.auth.signOut();
-    window.location.href = "login.html";
+    location.href="login.html";
 }
 
 initialize();
+
 </script>
 
 </body>

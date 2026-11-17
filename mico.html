@@ -99,5 +99,27 @@
         window.open("https://wa.me" + WHATSAPP_NUMBER + "?text=" + text, '_blank');
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+
+<script>
+const { createClient } = supabase;
+
+const supabaseClient = createClient(
+  "https://anfpisxylmvclheoehnh.supabase.co",
+  "sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S"
+);
+
+async function checkUserLogin() {
+  const { data, error } = await supabaseClient.auth.getUser();
+
+  if (error || !data.user) {
+    alert("يجب تسجيل الدخول أولاً");
+    window.location.href = "register.html";
+    return false;
+  }
+
+  return true;
+}
+</script>
 </body>
 </html>
