@@ -1,847 +1,111 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JAKO STORE - Clash of Clans</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101010">
+    <meta name="description" content="شحن كلاش أوف كلانس عبر JAKO STORE">
+    <title>شحن Clash of Clans | JAKO STORE</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+    <link rel="stylesheet" href="store.css">
 
-<style>
-*{box-sizing:border-box}
-body{
-    margin:0;
-    padding:20px;
-    background:#121212;
-    color:#fff;
-    font-family:Arial,sans-serif;
-    text-align:center
-}
-.container{
-    max-width:500px;
-    margin:20px auto;
-    padding:22px;
-    background:#1e1e1e;
-    border-radius:15px;
-    box-shadow:0 5px 22px #0008
-}
-h1{color:#ff9800;margin:5px 0}
-.sub{color:#bbb;margin:8px 0 22px;font-size:14px}
-.group{text-align:right;margin:16px 0}
-label{display:block;margin-bottom:8px;font-weight:bold}
-input,select,textarea{
-    width:100%;
-    padding:13px;
-    border:1px solid #444;
-    border-radius:8px;
-    background:#292929;
-    color:#fff;
-    font-size:15px
-}
-input:focus,select:focus,textarea:focus{
-    outline:none;border-color:#ff9800
-}
-textarea{resize:vertical;min-height:75px}
-button{
-    border:0;
-    border-radius:8px;
-    padding:13px;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer
-}
-#submitBtn{
-    width:100%;
-    background:#25d366;
-    color:#111;
-    margin-top:10px
-}
-button:disabled{opacity:.6;cursor:not-allowed}
-.price{
-    background:#292929;
-    border:1px solid #444;
-    border-radius:10px;
-    padding:14px;
-    margin:15px 0;
-    text-align:right;
-    line-height:2
-}
-.price strong{color:#ff9800}
-.notice,.small{
-    font-size:12px;
-    color:#bbb;
-    line-height:1.8
-}
-.notice{color:#ffc107;margin-top:7px}
-.section-title{
-    color:#ff9800;
-    text-align:right;
-    margin:22px 0 10px;
-    border-bottom:1px solid #444;
-    padding-bottom:8px
-}
-.back{
-    display:inline-block;
-    margin-top:18px;
-    color:#ff9800;
-    text-decoration:none
-}
-.modal{
-    display:none;
-    position:fixed;
-    z-index:1000;
-    inset:0;
-    width:100%;
-    height:100%;
-    background:#000d;
-    justify-content:center;
-    align-items:center;
-    overflow-y:auto;
-    padding:18px
-}
-.modal-content{
-    background:#2a2a2a;
-    padding:22px;
-    border-radius:12px;
-    max-width:400px;
-    width:100%;
-    text-align:center;
-    border:1px solid #ff9800;
-    margin:auto
-}
-.modal h2{color:#ff9800}
-.qrcode-box{
-    background:#fff;
-    padding:9px;
-    border-radius:9px;
-    display:inline-block
-}
-.qrcode-box img{
-    width:200px;
-    height:200px;
-    object-fit:contain;
-    display:block
-}
-.note{
-    font-size:25px;
-    letter-spacing:3px;
-    color:#ff9800;
-    font-weight:bold;
-    direction:ltr;
-    margin:12px
-}
-.actions{display:flex;gap:9px}
-.actions button{flex:1}
-.copy{background:#ff9800}
-.confirm{background:#25d366}
-.close{
-    background:#555;
-    color:white;
-    width:100%;
-    margin-top:10px
-}
-.check-row{
-    display:flex;
-    align-items:flex-start;
-    gap:9px;
-    text-align:right;
-    font-size:13px;
-    line-height:1.7;
-    margin:12px 0
-}
-.check-row input{
-    width:18px;
-    height:18px;
-    margin-top:2px;
-    flex-shrink:0
-}
-</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+    <script defer src="supabase-config.js"></script>
+    <script defer src="catalog.js"></script>
+    <script defer src="product-engine.js"></script>
 </head>
 
-<body>
-
-<div class="container">
-
-<h1>JAKO STORE</h1>
-<div class="sub">Clash of Clans - متجر الشحن</div>
-
-<form id="orderForm">
-
-<div class="section-title">بيانات القرية</div>
-
-<div class="group">
-<label for="playerName">اسم اللاعب</label>
-<input id="playerName" required placeholder="اسم قريتك داخل اللعبة">
-</div>
-
-<div class="group">
-<label for="playerTag">Player Tag</label>
-<input id="playerTag" required placeholder="#XXXXXXXX">
-</div>
-
-<div class="group">
-<label for="townHall">مستوى Town Hall</label>
-<select id="townHall" required>
-<option value="">اختر مستوى قريتك</option>
-<option value="3">Town Hall 3</option>
-<option value="4">Town Hall 4</option>
-<option value="5">Town Hall 5</option>
-<option value="6">Town Hall 6</option>
-<option value="7">Town Hall 7</option>
-<option value="8">Town Hall 8</option>
-<option value="9">Town Hall 9</option>
-<option value="10">Town Hall 10</option>
-<option value="11">Town Hall 11</option>
-<option value="12">Town Hall 12</option>
-<option value="13">Town Hall 13</option>
-<option value="14">Town Hall 14</option>
-<option value="15">Town Hall 15</option>
-<option value="16">Town Hall 16</option>
-<option value="17">Town Hall 17</option>
-<option value="18">Town Hall 18</option>
-</select>
-</div>
-
-<div class="section-title">اختر المنتج</div>
-
-<div class="group">
-<label for="productType">القسم</label>
-<select id="productType" required>
-<option value="">اختر القسم</option>
-<option value="gems">جواهر Gems</option>
-<option value="goldpass">Gold Pass</option>
-<option value="eventpass">Event Pass</option>
-<option value="special">العروض الخاصة والعناصر الأخرى</option>
-</select>
-</div>
-
-<div class="group" id="gemsGroup" style="display:none">
-<label for="gemPackage">باقة الجواهر</label>
-<select id="gemPackage">
-<option value="">اختر باقة الجواهر</option>
-<option value="80" data-usd="0.99">80 جوهرة - $0.99</option>
-<option value="500" data-usd="4.99">500 جوهرة - $4.99</option>
-<option value="1200" data-usd="9.99">1,200 جوهرة - $9.99</option>
-<option value="2500" data-usd="19.99">2,500 جوهرة - $19.99</option>
-<option value="6500" data-usd="49.99">6,500 جوهرة - $49.99</option>
-<option value="14000" data-usd="99.99">14,000 جوهرة - $99.99</option>
-</select>
-<div class="notice">
-الأسعار مرجعية بالدولار وقد تختلف حسب بلد الحساب ومتجر اللعبة.
-</div>
-</div>
-
-<div class="group" id="passGroup" style="display:none">
-<label for="passQuantity">عدد التصاريح</label>
-<select id="passQuantity">
-<option value="1">تصريح واحد</option>
-<option value="2">تصريحان</option>
-<option value="3">3 تصاريح</option>
-</select>
-
-<label for="friendCode" style="margin-top:14px">
-Supercell ID Friend Code
-</label>
-<input id="friendCode" placeholder="أدخل رمز الصداقة إن توفر">
-
-<div class="notice">
-إهداء التصاريح يتطلب استيفاء شروط Supercell ID، ومنها مرور 7 أيام على الصداقة.
-</div>
-
-<label class="check-row">
-<input type="checkbox" id="friendConfirm">
-<span>أؤكد أنني أفهم أن إهداء التصريح يتطلب استيفاء شروط الصداقة لدى Supercell.</span>
-</label>
-</div>
-
-<div class="group" id="specialGroup" style="display:none">
-<label for="specialName">اسم العرض أو العنصر المطلوب</label>
-<input id="specialName" placeholder="مثال: عرض موسمي أو عنصر سحري">
-
-<label for="specialDetails" style="margin-top:14px">
-تفاصيل إضافية
-</label>
-<textarea id="specialDetails" placeholder="اكتب تفاصيل العرض أو أرسل صورة العرض عبر واتساب بعد إرسال الطلب"></textarea>
-<div class="notice">
-العروض الخاصة تختلف حسب الحساب والموسم، وسيتم تحديد السعر والتوفر بعد مراجعة الطلب.
-</div>
-</div>
-
-<div class="price">
-<div>المنتج: <strong id="selectedProduct">—</strong></div>
-<div>السعر بالدولار: <strong id="priceUSD">—</strong></div>
-<div>السعر بالليرة السورية: <strong id="priceSYP">—</strong></div>
-<div class="small">لا يتم عرض سعر الصرف.</div>
-</div>
-
-<div class="section-title">طريقة الدفع</div>
-
-<div class="group">
-<label for="paymentMethod">طريقة الدفع</label>
-<select id="paymentMethod" required>
-<option value="">اختر طريقة الدفع</option>
-<option value="شام كاش">شام كاش</option>
-<option value="بطاقات جوجل بلاي">بطاقة Google Play</option>
-<option value="الطلب عبر واتساب">الطلب عبر واتساب - الدفع لاحقاً</option>
-</select>
-</div>
-
-<div class="group" id="googleCodeGroup" style="display:none">
-<label for="googleCode">كود بطاقة Google Play</label>
-<input id="googleCode" placeholder="أدخل كود البطاقة">
-</div>
-
-<button id="submitBtn" type="submit" disabled>
-جارٍ تحميل الأسعار...
-</button>
-
-</form>
-
-<a class="back" href="index.html">⬅️ العودة إلى المتجر</a>
-<div class="small">JAKO STORE © جميع الحقوق محفوظة</div>
-</div>
-
-<div id="qrModal" class="modal">
-<div class="modal-content">
-<h2>الدفع عبر شام كاش</h2>
-<p>حوّل قيمة الطلب إلى الحساب التالي:</p>
-
-<div class="qrcode-box">
-<img src="qr-code.png" alt="QR شام كاش"
-onerror="this.style.display='none'">
-</div>
-
-<p>حساب شام كاش: <strong dir="ltr">0976567876</strong></p>
-<p>انسخ الرقم وضعه في ملاحظة شام كاش:</p>
-<div id="noteCode" class="note">--------</div>
-
-<div class="actions">
-<button type="button" class="copy" id="copyNoteBtn">نسخ الرقم</button>
-<button type="button" class="confirm" id="confirmBtn">تم التحويل، أرسل الطلب</button>
-</div>
-
-<button type="button" class="close" id="closeModalBtn">إغلاق</button>
-<p class="small">بعد التأكيد ستفتح محادثة واتساب لإرسال تفاصيل طلبك.</p>
-</div>
-</div>
-
-<script>
-"use strict";
-
-/* إعدادات المتجر */
-
-const SUPABASE_URL =
-"https://anfpisxylmvclheoehnh.supabase.co";
-
-const SUPABASE_ANON_KEY =
-"sb_publishable_B9JjVM8dQpDnOOMaK_QIKg_kXlud85S";
-
-const db = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
-
-const WHATSAPP_NUMBER = "963982704754";
-const SHAM_CASH_ACCOUNT = "0976567876";
-
-const $ = id => document.getElementById(id);
-
-let exchangeRate = null;
-let currentNote = null;
-let pendingOrder = null;
-let busy = false;
-
-
-/* حساب الأرقام العشرية */
-
-function multiplyDecimals(a, b, places = 0) {
-    const [aw, af = ""] = String(a).split(".");
-    const [bw, bf = ""] = String(b).split(".");
-
-    let n = BigInt(aw + af) * BigInt(bw + bf);
-    const scale = af.length + bf.length;
-
-    if (scale > places) {
-        const divisor = 10n ** BigInt(scale - places);
-        n = (n + divisor / 2n) / divisor;
-    } else {
-        n *= 10n ** BigInt(places - scale);
-    }
-
-    return String(n);
-}
-
-function formatNumber(value, decimals = 2) {
-    return Number(value).toLocaleString("en-US", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals
-    });
-}
-
-
-/* تسجيل الدخول */
-
-async function checkLogin() {
-    const { data, error } = await db.auth.getSession();
-
-    if (error) throw error;
-
-    return data.session;
-}
-
-function goToLogin() {
-    localStorage.setItem("returnAfterLogin", "coc.html");
-    location.href = "login.html";
-}
-
-
-/* تحميل سعر الصرف الداخلي */
-
-async function loadSettings() {
-    const { data, error } = await db
-        .from("store_settings")
-        .select("usd_to_syp")
-        .eq("id", 1)
-        .single();
-
-    if (error) throw error;
-
-    exchangeRate = Number(data?.usd_to_syp);
-
-    if (!Number.isFinite(exchangeRate) || exchangeRate <= 0) {
-        throw Error("قيمة usd_to_syp غير صحيحة في إعدادات المتجر.");
-    }
-
-    updatePrice();
-}
-
-
-/* تغيير الأقسام */
-
-function updateSections() {
-    const type = $("productType").value;
-
-    $("gemsGroup").style.display =
-        type === "gems" ? "block" : "none";
-
-    $("passGroup").style.display =
-        ["goldpass", "eventpass"].includes(type)
-            ? "block" : "none";
-
-    $("specialGroup").style.display =
-        type === "special" ? "block" : "none";
-
-    updatePrice();
-}
-
-
-/* قراءة المنتج والسعر */
-
-function getProduct() {
-    const type = $("productType").value;
-
-    if (type === "gems") {
-        const select = $("gemPackage");
-
-        if (!select.value) {
-            throw Error("اختر باقة الجواهر.");
-        }
-
-        const option = select.options[select.selectedIndex];
-
-        return {
-            type,
-            name: option.textContent,
-            quantity: select.value,
-            usd: Number(option.dataset.usd)
-        };
-    }
-
-    if (type === "goldpass" || type === "eventpass") {
-        const quantity = Number($("passQuantity").value);
-
-        return {
-            type,
-            name: type === "goldpass" ? "Gold Pass" : "Event Pass",
-            quantity,
-            usd: null
-        };
-    }
-
-    if (type === "special") {
-        const name = $("specialName").value.trim();
-
-        if (!name) {
-            throw Error("اكتب اسم العرض أو العنصر المطلوب.");
-        }
-
-        return {
-            type,
-            name,
-            quantity: 1,
-            usd: null
-        };
-    }
-
-    throw Error("اختر نوع المنتج.");
-}
-
-
-/* تحديث السعر */
-
-function updatePrice() {
-    try {
-        const product = getProduct();
-
-        $("selectedProduct").textContent = product.name;
-
-        if (product.usd === null) {
-            $("priceUSD").textContent = "يحدد بعد مراجعة الطلب";
-            $("priceSYP").textContent = "يحدد بعد مراجعة الطلب";
-            return;
-        }
-
-        $("priceUSD").textContent =
-            "$" + formatNumber(product.usd);
-
-        $("priceSYP").textContent =
-            Number(
-                multiplyDecimals(
-                    product.usd,
-                    exchangeRate,
-                    0
-                )
-            ).toLocaleString("en-US") + " ل.س";
-
-    } catch (error) {
-        $("selectedProduct").textContent = "—";
-        $("priceUSD").textContent = "—";
-        $("priceSYP").textContent = "—";
-    }
-}
-
-
-/* التحقق وتجهيز الطلب */
-
-function prepareOrder() {
-    const playerName = $("playerName").value.trim();
-    const playerTag = $("playerTag").value.trim().toUpperCase();
-    const townHall = $("townHall").value;
-    const paymentMethod = $("paymentMethod").value;
-
-    if (!playerName) throw Error("أدخل اسم اللاعب.");
-
-    if (!/^#[A-Z0-9]{3,12}$/.test(playerTag)) {
-        throw Error("تحقق من Player Tag. مثال: #ABC123");
-    }
-
-    if (!townHall) throw Error("اختر مستوى Town Hall.");
-
-    if (!paymentMethod) throw Error("اختر طريقة الدفع.");
-
-    const product = getProduct();
-
-    if (product.type === "goldpass" || product.type === "eventpass") {
-        if (!$("friendConfirm").checked) {
-            throw Error("يرجى تأكيد فهم شروط إهداء التصاريح.");
-        }
-
-        if (!$("friendCode").value.trim()) {
-            throw Error("أدخل Supercell ID Friend Code.");
-        }
-
-        const minimumTownHall =
-            product.type === "goldpass" ? 7 : 6;
-
-        if (Number(townHall) < minimumTownHall) {
-            throw Error(
-                product.type === "goldpass"
-                    ? "Gold Pass يتطلب Town Hall 7 أو أعلى."
-                    : "Event Pass يتطلب Town Hall 6 أو أعلى."
-            );
-        }
-    }
-
-    const googleCode = $("googleCode").value.trim();
-
-    if (
-        paymentMethod === "بطاقات جوجل بلاي" &&
-        !googleCode
-    ) {
-        throw Error("أدخل كود بطاقة Google Play.");
-    }
-
-    return {
-        playerName,
-        playerTag,
-        townHall,
-        product,
-        paymentMethod,
-        friendCode: $("friendCode").value.trim(),
-        specialDetails: $("specialDetails").value.trim(),
-        googleCode
-    };
-}
-
-
-/* رقم ملاحظة شام كاش */
-
-async function generateNote() {
-    const { data, error } = await db.rpc("generate_shamcash_note");
-
-    if (error) throw error;
-
-    let value = data;
-
-    if (value && typeof value === "object") {
-        value =
-            value.note_code ??
-            value.note ??
-            value.code ??
-            value.result;
-    }
-
-    value = String(value ?? "").trim();
-
-    if (!/^\d{8}$/.test(value)) {
-        throw Error("لم يتم الحصول على رقم ملاحظة صحيح من Supabase.");
-    }
-
-    return value;
-}
-
-
-/* رسالة واتساب */
-
-function makeMessage(order, note = null) {
-    const p = order.product;
-
-    const lines = [
-        "طلب جديد - JAKO STORE",
-        "اللعبة: Clash of Clans",
-        "اسم اللاعب: " + order.playerName,
-        "Player Tag: " + order.playerTag,
-        "Town Hall: " + order.townHall,
-        "المنتج: " + p.name,
-        "الكمية: " + p.quantity,
-        "طريقة الدفع: " + order.paymentMethod
-    ];
-
-    if (p.usd !== null) {
-        lines.push("السعر بالدولار: $" + formatNumber(p.usd));
-
-        lines.push(
-            "السعر بالليرة السورية: " +
-            Number(
-                multiplyDecimals(p.usd, exchangeRate, 0)
-            ).toLocaleString("en-US") + " ل.س"
-        );
-    } else {
-        lines.push("السعر: يرجى تحديد السعر بعد مراجعة الطلب.");
-    }
-
-    if (order.friendCode) {
-        lines.push("Supercell ID Friend Code: " + order.friendCode);
-    }
-
-    if (order.specialDetails) {
-        lines.push("تفاصيل العرض: " + order.specialDetails);
-    }
-
-    if (order.googleCode) {
-        lines.push("كود Google Play: " + order.googleCode);
-    }
-
-    if (note) {
-        lines.push(
-            "رقم ملاحظة شام كاش: " + note,
-            "حساب شام كاش: " + SHAM_CASH_ACCOUNT
-        );
-    }
-
-    return lines.join("\n");
-}
-
-function sendWhatsApp(order, note = null) {
-    const url =
-        "https://wa.me/" +
-        WHATSAPP_NUMBER +
-        "?text=" +
-        encodeURIComponent(makeMessage(order, note));
-
-    location.href = url;
-}
-
-
-/* نافذة شام كاش */
-
-function closeModal() {
-    $("qrModal").style.display = "none";
-    currentNote = null;
-    pendingOrder = null;
-}
-
-async function copyNote() {
-    if (!currentNote) return;
-
-    try {
-        await navigator.clipboard.writeText(currentNote);
-    } catch (error) {
-        const area = document.createElement("textarea");
-        area.value = currentNote;
-        document.body.appendChild(area);
-        area.select();
-        document.execCommand("copy");
-        area.remove();
-    }
-
-    alert("تم نسخ رقم الملاحظة.");
-}
-
-async function confirmChamCash() {
-    if (busy || !pendingOrder || !currentNote) return;
-
-    busy = true;
-    $("confirmBtn").disabled = true;
-    $("confirmBtn").textContent = "جارٍ تجهيز الطلب...";
-
-    try {
-        const session = await checkLogin();
-
-        if (!session) {
-            closeModal();
-            goToLogin();
-            return;
-        }
-
-        const order = pendingOrder;
-        const note = currentNote;
-
-        closeModal();
-        sendWhatsApp(order, note);
-
-    } catch (error) {
-        alert("تعذر إكمال الطلب: " + (error.message || error));
-    } finally {
-        busy = false;
-        $("confirmBtn").disabled = false;
-        $("confirmBtn").textContent = "تم التحويل، أرسل الطلب";
-    }
-}
-
-
-/* أحداث الصفحة */
-
-$("productType").addEventListener("change", updateSections);
-
-$("gemPackage").addEventListener("change", updatePrice);
-$("passQuantity").addEventListener("change", updatePrice);
-$("specialName").addEventListener("input", updatePrice);
-
-$("paymentMethod").addEventListener("change", function() {
-    $("googleCodeGroup").style.display =
-        this.value === "بطاقات جوجل بلاي" ? "block" : "none";
-});
-
-$("copyNoteBtn").addEventListener("click", copyNote);
-$("confirmBtn").addEventListener("click", confirmChamCash);
-$("closeModalBtn").addEventListener("click", closeModal);
-
-$("qrModal").addEventListener("click", function(event) {
-    if (event.target === $("qrModal")) closeModal();
-});
-
-
-/* إرسال الطلب */
-
-$("orderForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
-
-    if (busy) return;
-
-    busy = true;
-    $("submitBtn").disabled = true;
-    $("submitBtn").textContent = "جارٍ تجهيز الطلب...";
-
-    try {
-        const session = await checkLogin();
-
-        if (!session) {
-            goToLogin();
-            return;
-        }
-
-        if (!exchangeRate) {
-            throw Error("لم يتم تحميل إعدادات الأسعار.");
-        }
-
-        const order = prepareOrder();
-
-        // العروض الخاصة والتصاريح: طلب مراجعة عبر واتساب
-        if (
-            order.product.type === "special" ||
-            order.product.type === "goldpass" ||
-            order.product.type === "eventpass"
-        ) {
-            sendWhatsApp(order);
-            return;
-        }
-
-        // الجواهر عبر شام كاش
-        if (order.paymentMethod === "شام كاش") {
-            const note = await generateNote();
-
-            currentNote = note;
-            pendingOrder = order;
-
-            $("noteCode").textContent = note;
-            $("qrModal").style.display = "flex";
-
-            return;
-        }
-
-        // Google Play أو الطلب عبر واتساب
-        sendWhatsApp(order);
-
-    } catch (error) {
-        console.error("Clash of Clans order error:", error);
-
-        alert(
-            "حدث خطأ أثناء تجهيز الطلب:\n" +
-            (error.message || error)
-        );
-
-    } finally {
-        busy = false;
-        $("submitBtn").disabled = false;
-        $("submitBtn").textContent = "تأكيد الطلب";
-    }
-});
-
-
-/* تشغيل الصفحة */
-
-(async function init() {
-    $("submitBtn").disabled = true;
-
-    try {
-        await loadSettings();
-
-        $("submitBtn").disabled = false;
-        $("submitBtn").textContent = "تأكيد الطلب";
-
-    } catch (error) {
-        console.error("Settings error:", error);
-
-        $("submitBtn").textContent = "تعذر تحميل الأسعار";
-
-        alert(
-            "تعذر تحميل إعدادات المتجر: " +
-            (error.message || error)
-        );
-    }
-})();
-</script>
+<body data-product="coc">
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="index.html">
+                🎮 JAKO STORE
+                <small>شحن الألعاب والتطبيقات</small>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html">المتجر</a>
+                <a href="login.html">تسجيل الدخول</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="productRoot" class="page-wrap"></main>
+
+    <footer class="footer">
+        JAKO STORE — الأسعار المرجعية بالدولار الأمريكي وقد تختلف حسب المنطقة والمنصة.
+    </footer>
+
+    <!-- نافذة الدفع عبر شام كاش -->
+    <div class="modal"
+         id="qrModal"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="qrTitle">
+
+        <div class="modal-content">
+
+            <button class="modal-close"
+                    id="modalClose"
+                    type="button"
+                    aria-label="إغلاق">
+                ×
+            </button>
+
+            <h2 id="qrTitle">تحويل عبر شام كاش</h2>
+
+            <p>
+                حوّل المبلغ إلى الحساب التالي، وضع رقم الملاحظة
+                في خانة الملاحظات داخل تطبيق شام كاش.
+            </p>
+
+            <div class="qr-box">
+                <img
+                    src="qr-code.png"
+                    alt="رمز QR لشام كاش"
+                    onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/ismaeel2462-wq/JaKo-store--/main/qr-code.png'"
+                >
+            </div>
+
+            <p>
+                رقم الحساب:
+                <strong id="qrAccount" style="color:var(--orange)">
+                    0976567876
+                </strong>
+            </p>
+
+            <div class="note-box">
+                <span class="note-code" id="noteCode">--------</span>
+
+                <button class="copy-btn"
+                        id="modalCopy"
+                        type="button">
+                    نسخ رقم الملاحظة
+                </button>
+            </div>
+
+            <p>
+                بعد إتمام التحويل، اضغط على تأكيد لإرسال تفاصيل الطلب عبر واتساب.
+            </p>
+
+            <div class="modal-actions">
+                <button class="btn btn-green"
+                        id="modalConfirm"
+                        type="button">
+                    ✅ تم التحويل — إرسال الطلب
+                </button>
+
+                <button class="secondary-btn"
+                        id="modalCancel"
+                        type="button">
+                    إلغاء
+                </button>
+            </div>
+
+        </div>
+    </div>
 
 </body>
 </html>

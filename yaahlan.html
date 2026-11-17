@@ -1,0 +1,111 @@
+
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101010">
+    <meta name="description" content="شحن ياهلا عبر JAKO STORE">
+    <title>شحن ياهلا | JAKO STORE</title>
+
+    <link rel="stylesheet" href="store.css">
+
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+    <script defer src="supabase-config.js"></script>
+    <script defer src="catalog.js"></script>
+    <script defer src="product-engine.js"></script>
+</head>
+
+<body data-product="yaahlan">
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="index.html">
+                🎮 JAKO STORE
+                <small>شحن الألعاب والتطبيقات</small>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html">المتجر</a>
+                <a href="login.html">تسجيل الدخول</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="productRoot" class="page-wrap"></main>
+
+    <footer class="footer">
+        JAKO STORE — الأسعار المرجعية بالدولار الأمريكي وقد تختلف حسب المنطقة والمنصة.
+    </footer>
+
+    <!-- نافذة الدفع عبر شام كاش -->
+    <div class="modal"
+         id="qrModal"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="qrTitle">
+
+        <div class="modal-content">
+
+            <button class="modal-close"
+                    id="modalClose"
+                    type="button"
+                    aria-label="إغلاق">
+                ×
+            </button>
+
+            <h2 id="qrTitle">تحويل عبر شام كاش</h2>
+
+            <p>
+                حوّل المبلغ إلى الحساب التالي، وضع رقم الملاحظة
+                في خانة الملاحظات داخل تطبيق شام كاش.
+            </p>
+
+            <div class="qr-box">
+                <img
+                    src="qr-code.png"
+                    alt="رمز QR لشام كاش"
+                    onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/ismaeel2462-wq/JaKo-store--/main/qr-code.png'"
+                >
+            </div>
+
+            <p>
+                رقم الحساب:
+                <strong id="qrAccount" style="color:var(--orange)">
+                    0976567876
+                </strong>
+            </p>
+
+            <div class="note-box">
+                <span class="note-code" id="noteCode">--------</span>
+
+                <button class="copy-btn"
+                        id="modalCopy"
+                        type="button">
+                    نسخ رقم الملاحظة
+                </button>
+            </div>
+
+            <p>
+                بعد إتمام التحويل، اضغط على تأكيد لإرسال تفاصيل الطلب عبر واتساب.
+            </p>
+
+            <div class="modal-actions">
+                <button class="btn btn-green"
+                        id="modalConfirm"
+                        type="button">
+                    ✅ تم التحويل — إرسال الطلب
+                </button>
+
+                <button class="secondary-btn"
+                        id="modalCancel"
+                        type="button">
+                    إلغاء
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
