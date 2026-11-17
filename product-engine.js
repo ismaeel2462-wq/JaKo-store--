@@ -7,7 +7,7 @@
 (() => {
     "use strict";
 
-    const STORE = window.JAKO;
+   const STORE = window.JAKO_STORE || window.JAKO || null;
     const PRODUCTS = window.JAKO_PRODUCTS || {};
     const params = new URLSearchParams(window.location.search);
     const productId =
